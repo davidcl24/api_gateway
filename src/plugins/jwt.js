@@ -8,7 +8,7 @@ export default async function jwtPlugin(fastify, opts) {
     try {
       await request.jwtVerify();
     } catch (err) {
-      reply.code(401).send({ error: 'Token inválido o ausente' });
+      reply.code(401).send({ error: 'Invalid or absent token' });
     }
   });
 }
