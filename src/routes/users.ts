@@ -9,9 +9,6 @@ export default async function usersProxy(fastify: FastifyInstance, opts: Fastify
     fastify.get('/users', { preHandler: [fastify.authenticate] }, async (request, reply) => {
         const res = await fetch(`${usersServiceUrl}/users`, {
             method: 'GET',
-            headers: {
-                Authorization: request.headers.authorization 
-            },
         });
         const data = await res.json() as Record<string, unknown>;
         return reply.send(data);
@@ -22,21 +19,17 @@ export default async function usersProxy(fastify: FastifyInstance, opts: Fastify
 
         const res = await fetch(`${usersServiceUrl}/users/${id}`, {
             method: 'GET',
-            headers: {
-                Authorization: request.headers.authorization 
-            },
         });
         const data = await res.json() as Record<string, unknown>;
         return reply.send(data);
     });
 
     
-    fastify.post('/users', { preHandler: [fastify.authenticate] }, async (request, reply) => {
+    fastify.post('/users', async (request, reply) => {
         const res = await fetch(`${usersServiceUrl}/users`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                Authorization: request.headers.authorization 
             },
             body: JSON.stringify(request.body),
         });
@@ -51,7 +44,6 @@ export default async function usersProxy(fastify: FastifyInstance, opts: Fastify
             method: 'PATCH',
             headers: {
                 'Content-Type': 'application/json',
-                Authorization: request.headers.authorization
             },
             body: JSON.stringify(request.body)
         });
@@ -64,11 +56,45 @@ export default async function usersProxy(fastify: FastifyInstance, opts: Fastify
 
         const res = await fetch(`${usersServiceUrl}/users/${id}`, {
             method: 'DELETE',
-            headers: {
-                Authorization: request.headers.authorization
-            }
         });
         const data = await res.json() as Record<string, unknown>;
         return reply.send(data);
+    });
+
+    fastify.post('/login', async(request, reply) => {
+        const res = await fetch(`${usersServiceUrl}/login`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(request.body)
+        });
+        const data = await res.json() as Record<string, unknown>;
+        return reply.send(data);
+    });
+
+    fastify.post('/logout', async(request, reply) => {
+        const res = await fetch(`${usersServiceUrl}/logout`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(request.body)
+        });
+        const data = await res.json() as Record<string, unknown>;
+        return reply.send(data);
+    });
+
+    fastify.post('/refresh', { preHandler: [fastify.authenticate] }, async(request, reply) => {
+        const res = await fetch(`${usersServiceUrl}/refresh`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'x-user-id': request.user.sub
+            },
+            body: JSON.stringify(request.body)
+        });
+        const data = await res.json() as Record<string, unknown>;
+        return reply.send(data)
     });
 }
