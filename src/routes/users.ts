@@ -10,7 +10,7 @@ export default async function usersProxy(fastify: FastifyInstance, opts: Fastify
         const res = await fetch(`${usersServiceUrl}/users`, {
             method: 'GET',
         });
-        const data = await res.json() as Record<string, unknown>;
+        const data = await res.json();
         return reply.send(data);
     });
 
@@ -20,7 +20,7 @@ export default async function usersProxy(fastify: FastifyInstance, opts: Fastify
         const res = await fetch(`${usersServiceUrl}/users/${id}`, {
             method: 'GET',
         });
-        const data = await res.json() as Record<string, unknown>;
+        const data = await res.json();
         return reply.send(data);
     });
 
@@ -33,7 +33,7 @@ export default async function usersProxy(fastify: FastifyInstance, opts: Fastify
             },
             body: JSON.stringify(request.body),
         });
-        const data = await res.json() as Record<string, unknown>;
+        const data = await res.json();
         return reply.send(data);
     });
 
@@ -47,7 +47,7 @@ export default async function usersProxy(fastify: FastifyInstance, opts: Fastify
             },
             body: JSON.stringify(request.body)
         });
-        const data = await res.json() as Record<string, unknown>;
+        const data = await res.json();
         return reply.send(data);
     });
 
@@ -57,7 +57,7 @@ export default async function usersProxy(fastify: FastifyInstance, opts: Fastify
         const res = await fetch(`${usersServiceUrl}/users/${id}`, {
             method: 'DELETE',
         });
-        const data = await res.json() as Record<string, unknown>;
+        const data = await res.json();
         return reply.send(data);
     });
 
@@ -69,7 +69,7 @@ export default async function usersProxy(fastify: FastifyInstance, opts: Fastify
             },
             body: JSON.stringify(request.body)
         });
-        const data = await res.json() as Record<string, unknown>;
+        const data = await res.json();
         return reply.send(data);
     });
 
@@ -81,7 +81,7 @@ export default async function usersProxy(fastify: FastifyInstance, opts: Fastify
             },
             body: JSON.stringify(request.body)
         });
-        const data = await res.json() as Record<string, unknown>;
+        const data = await res.json();
         return reply.send(data);
     });
 
@@ -94,7 +94,7 @@ export default async function usersProxy(fastify: FastifyInstance, opts: Fastify
             },
             body: JSON.stringify(request.body)
         });
-        const data = await res.json() as Record<string, unknown>;
+        const data = await res.json();
         return reply.send(data)
     });
 }
