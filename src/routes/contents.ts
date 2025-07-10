@@ -307,7 +307,7 @@ function registerMovies(fastify: FastifyInstance, contentsServiceUrl: string) {
         return reply.send(data);
     });
 
-    fastify.patch<{ Params: Params }>('/movies/:id', async (request, reply) => {
+    fastify.delete<{ Params: Params }>('/movies/:id', async (request, reply) => {
         const id = request.params.id;
 
         const res = await fetch(`${contentsServiceUrl}/movies/${id}`, {
