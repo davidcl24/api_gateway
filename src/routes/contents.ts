@@ -5,6 +5,7 @@ export default async function contentsProxy(fastify: FastifyInstance, opts: Fast
 
     registerActors(fastify, contentsServiceUrl);
     registerDirectors(fastify, contentsServiceUrl);
+    registerGenres(fastify, contentsServiceUrl);
 }
 
 function registerActors(fastify: FastifyInstance, contentsServiceUrl: string) {
@@ -165,4 +166,72 @@ function registerDirectors(fastify: FastifyInstance, contentsServiceUrl: string)
         const data = await res.json();
         return reply.send(data);
     });
+}
+
+function registerGenres(fastify: FastifyInstance, contentsServiceUrl: string) {
+      interface Params {
+        id: String
+    }
+
+    fastify.get('/genres', async (request, reply) => {
+        const res = await fetch(`${contentsServiceUrl}/genres`, {
+            method: 'GET',
+        });
+        const data = await res.json();
+        return reply.send(data);
+    });
+
+    fastify.get<{ Params: Params }>('/genres/:id', async (request, reply) => {
+        const id = request.params.id;
+
+        const res = await fetch(`${contentsServiceUrl}/genres/${id}`, {
+            method: 'GET',
+        });
+        const data = await res.json();
+        return reply.send(data);
+    });
+
+    fastify.post('/genres', async (request, reply) => {
+        const res = await fetch(`${contentsServiceUrl}/genres`, {
+            method: 'POST',
+            headers: {
+                "Content-Type": 'application/json',
+            },
+            body: JSON.stringify(request.body),
+        });
+        const data = await res.json();
+        return reply.send(data);
+    });
+
+    fastify.patch<{ Params: Params }>('/genres/:id', async (request, reply) => {
+        const id = request.params.id;
+
+        const res = await fetch(`${contentsServiceUrl}/genres/${id}`, {
+            method: 'PATCH',
+            headers: {
+                "Content-Type": 'application/json',
+            },
+            body: JSON.stringify(request.body),
+        });
+        const data = await res.json();
+        return reply.send(data);
+    });
+
+    fastify.delete<{ Params: Params }>('/genres/:id', async (request, reply) => {
+        const id = request.params.id;
+
+        const res = await fetch(`${contentsServiceUrl}/genres/${id}`, {
+            method: 'DELETE',
+            headers: {
+                "Content-Type": 'application/json',
+            },
+            body: JSON.stringify(request.body),
+        });
+        const data = await res.json();
+        return reply.send(data);
+    });
+}
+
+function registerMovies(fastify: FastifyInstance, contentsServiceUrl: string) {
+    
 }

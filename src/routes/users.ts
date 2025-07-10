@@ -45,7 +45,7 @@ export default async function usersProxy(fastify: FastifyInstance, opts: Fastify
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify(request.body)
+            body: JSON.stringify(request.body),
         });
         const data = await res.json();
         return reply.send(data);
@@ -67,7 +67,7 @@ export default async function usersProxy(fastify: FastifyInstance, opts: Fastify
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify(request.body)
+            body: JSON.stringify(request.body),
         });
         const data = await res.json();
         return reply.send(data);
@@ -79,7 +79,7 @@ export default async function usersProxy(fastify: FastifyInstance, opts: Fastify
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify(request.body)
+            body: JSON.stringify(request.body),
         });
         const data = await res.json();
         return reply.send(data);
@@ -92,7 +92,7 @@ export default async function usersProxy(fastify: FastifyInstance, opts: Fastify
                 'Content-Type': 'application/json',
                 'x-user-id': request.user.sub
             },
-            body: JSON.stringify(request.body)
+            body: JSON.stringify(request.body),
         });
         const data = await res.json();
         return reply.send(data)
