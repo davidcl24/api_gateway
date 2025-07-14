@@ -1,4 +1,5 @@
 import type { FastifyInstance, FastifyPluginOptions } from 'fastify';
+import { request } from 'http';
 
 export default async function contentsProxy(fastify: FastifyInstance, opts: FastifyPluginOptions) {
     const contentsServiceUrl = process.env.CONTENTS_SERVICE_URL || 'http://localhost:4000';
@@ -6,6 +7,9 @@ export default async function contentsProxy(fastify: FastifyInstance, opts: Fast
     registerActors(fastify, contentsServiceUrl);
     registerDirectors(fastify, contentsServiceUrl);
     registerGenres(fastify, contentsServiceUrl);
+    registerMovies(fastify, contentsServiceUrl);
+    registerShows(fastify, contentsServiceUrl);
+    registerEpisodes(fastify, contentsServiceUrl);
 }
 
 function registerActors(fastify: FastifyInstance, contentsServiceUrl: string) {
@@ -311,6 +315,168 @@ function registerMovies(fastify: FastifyInstance, contentsServiceUrl: string) {
         const id = request.params.id;
 
         const res = await fetch(`${contentsServiceUrl}/movies/${id}`, {
+            method: 'DELETE',
+        });
+        const data = await res.json();
+        return reply.send(data);
+    });
+}
+
+function registerShows(fastify: FastifyInstance, contentsServiceUrl: string){
+     interface Params {
+        id: String
+    }
+
+    fastify.post('/shows', async (request, reply) => {
+        const res = await fetch(`${contentsServiceUrl}/shows`, {
+            method: 'POST',
+            headers: {
+                "Content-Type": 'application/json',
+            },
+            body: JSON.stringify(request.body),
+        });
+        const data = await res.json();
+        return reply.send(data);
+    });
+
+    fastify.get('/shows', async (request, reply) => {
+        const res = await fetch(`${contentsServiceUrl}/shows`, {
+            method: 'GET',
+        });
+        const data = await res.json();
+        return reply.send(data);
+    });
+
+    fastify.get<{ Params: Params }>('/shows/:id', async (request, reply) => {
+        const id = request.params.id;
+
+        const res = await fetch(`${contentsServiceUrl}/shows/${id}`, {
+            method: 'GET',
+        });
+        const data = await res.json();
+        return reply.send(data);
+    });
+
+    fastify.get<{ Params: Params }>('/genres/:id/shows', async (request, reply) => {
+        const id = request.params.id;
+
+        const res = await fetch(`${contentsServiceUrl}/genres/${id}/shows`, {
+            method: 'GET',
+        });
+        const data = await res.json();
+        return reply.send(data);
+    });
+
+    fastify.get<{ Params: Params }>('/actors/:id/shows', async (request, reply) => {
+        const id = request.params.id;
+
+        const res = await fetch(`${contentsServiceUrl}/actors/${id}/shows`, {
+            method: 'GET',
+        });
+        const data = await res.json();
+        return reply.send(data);
+    });
+    fastify.get<{ Params: Params }>('/directors/:id/shows', async (request, reply) => {
+        const id = request.params.id;
+
+        const res = await fetch(`${contentsServiceUrl}/directors/${id}/shows`, {
+            method: 'GET',
+        });
+        const data = await res.json();
+        return reply.send(data);
+    });
+
+    fastify.patch<{ Params: Params }>('/shows/:id', async (request, reply) => {
+        const id = request.params.id;
+
+        const res = await fetch(`${contentsServiceUrl}/shows/${id}`, {
+            method: 'PATCH',
+            headers: {
+                "Content-Type": 'application/json',
+            },
+            body: JSON.stringify(request.body),
+        });
+        const data = await res.json();
+        return reply.send(data);
+    });
+
+    fastify.delete<{ Params: Params }>('/shows/:id', async (request, reply) => {
+        const id = request.params.id;
+
+        const res = await fetch(`${contentsServiceUrl}/shows/${id}`, {
+            method: 'DELETE',
+        });
+        const data = await res.json();
+        return reply.send(data);
+    });
+}
+
+function registerEpisodes(fastify: FastifyInstance, contentsServiceUrl: string){
+      interface Params {
+        id: String,
+        seasonNum: String
+    }
+    fastify.post('/episodes', async (request, reply) => {
+        const res = await fetch(`${contentsServiceUrl}/episodes`, {
+            method: 'POST',
+            headers: {
+                "Content-Type": 'application/json',
+            },
+            body: JSON.stringify(request.body),
+        });
+        const data = await res.json();
+        return reply.send(data);
+    });
+
+    fastify.get<{ Params: Params }>('/shows/:id/episodes', async (request, reply) => {
+        const id = request.params.id;
+
+        const res = await fetch(`${contentsServiceUrl}/shows/${id}/episodes`, {
+            method: 'GET',
+        });
+        const data = await res.json();
+        return reply.send(data);
+    });
+
+    fastify.get<{ Params: Params }>('/shows/:id/:seasonNum/episodes', async (request, reply) => {
+        const id = request.params.id;
+        const seasonNum = request.params.seasonNum;
+
+        const res = await fetch(`${contentsServiceUrl}/shows/${id}/${seasonNum}/episodes`, {
+            method: 'GET',
+        });
+        const data = await res.json();
+        return reply.send(data);
+    });
+
+    fastify.get<{ Params: Params }>('/episodes/:id', async (request, reply) => {
+        const id = request.params.id;
+
+        const res = await fetch(`${contentsServiceUrl}/episodes/${id}`, {
+            method: 'GET',
+        });
+        const data = await res.json();
+        return reply.send(data);
+    });
+
+    fastify.patch<{ Params: Params }>('/episodes/:id', async (request, reply) => {
+        const id = request.params.id;
+
+        const res = await fetch(`${contentsServiceUrl}/episodes/${id}`, {
+            method: 'PATCH',
+            headers: {
+                "Content-Type": 'application/json',
+            },
+            body: JSON.stringify(request.body),
+        });
+        const data = await res.json();
+        return reply.send(data);
+    });
+
+    fastify.delete<{ Params: Params }>('/episodes/:id', async (request, reply) => {
+        const id = request.params.id;
+
+        const res = await fetch(`${contentsServiceUrl}/episodes/${id}`, {
             method: 'DELETE',
         });
         const data = await res.json();
