@@ -259,8 +259,10 @@ function registerMovies(fastify: FastifyInstance, contentsServiceUrl: string) {
         }
 
         const fileKey = `${Date.now()}_${videoFileName}`;
-        const filePath = path.join('/videos', fileKey);
+        const dirPath = path.join('/movies');
+        const filePath = path.join(dirPath, fileKey);
 
+        await fs.promises.mkdir(dirPath, { recursive: true });
         await fs.promises.writeFile(filePath, videoFileBuffer);
 
         const movieData = {
@@ -329,13 +331,42 @@ function registerMovies(fastify: FastifyInstance, contentsServiceUrl: string) {
     
     fastify.patch<{ Params: Params }>('/movies/:id', async (request, reply) => {
         const id = request.params.id;
+        const parts = request.parts();
+        const metadata: { [key: string]: any } = {};
+        let videoFileBuffer = null;
+        let videoFileName = null;
+
+        for await (const part of parts) {
+            if (part.type === 'file') {
+                videoFileName = part.filename;
+                videoFileBuffer = await part.toBuffer();
+            } else {
+                metadata[part.fieldname] = part.value;
+            }
+        };
+
+        if (!videoFileBuffer || !videoFileName) {
+            return reply.code(400).send({ error: 'Missing file' });
+        }
+        
+        const fileKey = `${Date.now()}_${videoFileName}`;
+        const dirPath = path.join('/movies');
+        const filePath = path.join(dirPath, fileKey)
+
+        await fs.promises.mkdir(dirPath, { recursive: true });
+        await fs.promises.writeFile(filePath, videoFileBuffer);
+
+        const movieData = {
+            ...metadata,
+            file_key: fileKey,
+        }
 
         const res = await fetch(`${contentsServiceUrl}/movies/${id}`, {
             method: 'PATCH',
             headers: {
                 "Content-Type": 'application/json',
             },
-            body: JSON.stringify(request.body),
+            body: JSON.stringify(movieData),
         });
         const data = await res.json();
         return reply.send(data);
@@ -358,12 +389,25 @@ function registerShows(fastify: FastifyInstance, contentsServiceUrl: string){
     }
 
     fastify.post('/shows', async (request, reply) => {
+        const parts = request.parts();
+        const metadata: { [key: string]: any } = {};
+
+        for await (const part of parts) {
+            if (part.type === 'field') {
+                metadata[part.fieldname] = part.value;
+            }
+        };
+
+        const showData = {
+            ...metadata,
+        }
+        
         const res = await fetch(`${contentsServiceUrl}/shows`, {
             method: 'POST',
             headers: {
                 "Content-Type": 'application/json',
             },
-            body: JSON.stringify(request.body),
+            body: JSON.stringify(showData),
         });
         const data = await res.json();
         return reply.send(data);
@@ -418,13 +462,25 @@ function registerShows(fastify: FastifyInstance, contentsServiceUrl: string){
 
     fastify.patch<{ Params: Params }>('/shows/:id', async (request, reply) => {
         const id = request.params.id;
+        const parts = request.parts();
+        const metadata: { [key: string]: any } = {};
+
+        for await (const part of parts) {
+            if (part.type === 'field') {
+                metadata[part.fieldname] = part.value;
+            }
+        };
+
+        const showData = {
+            ...metadata,
+        }
 
         const res = await fetch(`${contentsServiceUrl}/shows/${id}`, {
             method: 'PATCH',
             headers: {
                 "Content-Type": 'application/json',
             },
-            body: JSON.stringify(request.body),
+            body: JSON.stringify(showData),
         });
         const data = await res.json();
         return reply.send(data);
@@ -447,12 +503,43 @@ function registerEpisodes(fastify: FastifyInstance, contentsServiceUrl: string){
         seasonNum: String
     }
     fastify.post('/episodes', async (request, reply) => {
+        const parts = request.parts();
+        const metadata: { [key: string]: any } = {};
+        let videoFileBuffer = null;
+        let videoFileName = null;
+
+
+        for await (const part of parts) {
+            if (part.type === 'file') {
+                videoFileName = part.filename;
+                videoFileBuffer = await part.toBuffer();
+            } else {
+                metadata[part.fieldname] = part.value;
+            }
+        }
+
+        if (!videoFileBuffer || !videoFileName) {
+            return reply.code(400).send({ error: 'Missing file' });
+        }
+        
+        const fileKey = `${Date.now()}_${videoFileName}`;
+        const dirPath = path.join(`/shows/${metadata['show_id']}/${metadata['season_num']}`);
+        const filePath = path.join(dirPath, fileKey);
+
+        await fs.promises.mkdir(dirPath, { recursive: true });
+        await fs.promises.writeFile(filePath, videoFileBuffer);
+
+        const episodeData = {
+            ...metadata,
+            file_key: fileKey,
+        }
+
         const res = await fetch(`${contentsServiceUrl}/episodes`, {
             method: 'POST',
             headers: {
                 "Content-Type": 'application/json',
             },
-            body: JSON.stringify(request.body),
+            body: JSON.stringify(episodeData),
         });
         const data = await res.json();
         return reply.send(data);
@@ -491,13 +578,43 @@ function registerEpisodes(fastify: FastifyInstance, contentsServiceUrl: string){
 
     fastify.patch<{ Params: Params }>('/episodes/:id', async (request, reply) => {
         const id = request.params.id;
+        const parts = request.parts();
+        const metadata: { [key: string]: any } = {};
+        let videoFileBuffer = null;
+        let videoFileName = null;
+
+
+        for await (const part of parts) {
+            if (part.type === 'file') {
+                videoFileName = part.filename;
+                videoFileBuffer = await part.toBuffer();
+            } else {
+                metadata[part.fieldname] = part.value;
+            }
+        }
+
+        if (!videoFileBuffer || !videoFileName) {
+            return reply.code(400).send({ error: 'Missing file' });
+        }
+        
+        const fileKey = `${Date.now()}_${videoFileName}`;
+        const dirPath = path.join(`/shows/${metadata['show_id']}/${metadata['season_num']}`);
+        const filePath = path.join(dirPath, fileKey);
+
+        await fs.promises.mkdir(dirPath, { recursive: true });
+        await fs.promises.writeFile(filePath, videoFileBuffer);
+
+        const episodeData = {
+            ...metadata,
+            file_key: fileKey,
+        }
 
         const res = await fetch(`${contentsServiceUrl}/episodes/${id}`, {
             method: 'PATCH',
             headers: {
                 "Content-Type": 'application/json',
             },
-            body: JSON.stringify(request.body),
+            body: JSON.stringify(episodeData),
         });
         const data = await res.json();
         return reply.send(data);
