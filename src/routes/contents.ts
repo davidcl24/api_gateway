@@ -1,5 +1,7 @@
 import type { FastifyInstance, FastifyPluginOptions } from 'fastify';
-import { request } from 'http';
+import  multipart from '@fastify/multipart';
+import fs from 'fs';
+import path from 'path';
 
 export default async function contentsProxy(fastify: FastifyInstance, opts: FastifyPluginOptions) {
     const contentsServiceUrl = process.env.CONTENTS_SERVICE_URL || 'http://localhost:4000';
@@ -238,12 +240,40 @@ function registerMovies(fastify: FastifyInstance, contentsServiceUrl: string) {
     }
 
     fastify.post('/movies', async (request, reply) => {
+        const parts = request.parts();
+        const metadata: { [key: string]: any } = {};
+        let videoFileBuffer = null;
+        let videoFileName = null;
+
+        for await (const part of parts) {
+            if (part.type === 'file') {
+                videoFileName = part.filename;
+                videoFileBuffer = await part.toBuffer();
+            } else {
+                metadata[part.fieldname] = part.value;
+            }
+        };
+
+        if (!videoFileBuffer || !videoFileName) {
+            return reply.code(400).send({ error: 'Missing file' });
+        }
+
+        const fileKey = `${Date.now()}_${videoFileName}`;
+        const filePath = path.join('/videos', fileKey);
+
+        await fs.promises.writeFile(filePath, videoFileBuffer);
+
+        const movieData = {
+            ...metadata,
+            file_key: fileKey,
+        }
+
         const res = await fetch(`${contentsServiceUrl}/movies`, {
             method: 'POST',
             headers: {
                 "Content-Type": 'application/json',
             },
-            body: JSON.stringify(request.body),
+            body: JSON.stringify(movieData),
         });
         const data = await res.json();
         return reply.send(data);

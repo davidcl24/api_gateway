@@ -3,10 +3,13 @@
     "@fastify/env": "^5.0.2",
     "@fastify/http-proxy": "^11.3.0",
     "@fastify/jwt": "^9.1.0",
+    "@fastify/multipart": "^9.0.3",
     "fastify": "^5.4.0",
     "fastify-cors": "^6.0.3",
     "fastify-http-proxy": "^6.2.2",
+    "fs": "^0.0.1-security",
     "node-fetch": "^3.3.2",
+    "path": "^0.12.7",
     "pino-pretty": "^13.0.0"
   },
   "devDependencies": {
