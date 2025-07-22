@@ -26,12 +26,13 @@ export default async function usersProxy(fastify: FastifyInstance, opts: Fastify
 
     
     fastify.post('/users', async (request, reply) => {
+        const wrappedBody = {user: request.body};
         const res = await fetch(`${usersServiceUrl}/users`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify(request.body),
+            body: JSON.stringify(wrappedBody),
         });
         const data = await res.json();
         return reply.send(data);
@@ -39,13 +40,14 @@ export default async function usersProxy(fastify: FastifyInstance, opts: Fastify
 
     fastify.patch<{ Params: Params }>('/users/:id', {preHandler: [fastify.authenticate] }, async (request, reply) => {
         const id = request.params.id
+        const wrappedBody = {user: request.body};
 
         const res = await fetch(`${usersServiceUrl}/users/${id}`, {
             method: 'PATCH',
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify(request.body),
+            body: JSON.stringify(wrappedBody),
         });
         const data = await res.json();
         return reply.send(data);
