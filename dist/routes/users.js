@@ -1,0 +1,109 @@
+export default async function usersProxy(fastify, opts) {
+    const usersServiceUrl = process.env.USERS_SERVICE_URL || 'http://localhost:4000';
+    fastify.get('/users', { preHandler: [fastify.authenticate] }, async (request, reply) => {
+        const res = await fetch(`${usersServiceUrl}/users`, {
+            method: 'GET',
+        });
+        const data = await res.json();
+        return reply.send(data);
+    });
+    fastify.get('/users/:id', { preHandler: [fastify.authenticate] }, async (request, reply) => {
+        const id = request.params.id;
+        const res = await fetch(`${usersServiceUrl}/users/${id}`, {
+            method: 'GET',
+        });
+        const data = await res.json();
+        return reply.send(data);
+    });
+    fastify.post('/users', async (request, reply) => {
+        const wrappedBody = { user: request.body };
+        const res = await fetch(`${usersServiceUrl}/users`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(wrappedBody),
+        });
+        const setCookies = res.headers.getSetCookie();
+        if (setCookies) {
+            for (const cookie of setCookies) {
+                reply.header('set-cookie', cookie);
+            }
+        }
+        const data = await res.json();
+        return reply.send(data);
+    });
+    fastify.patch('/users/:id', { preHandler: [fastify.authenticate] }, async (request, reply) => {
+        const id = request.params.id;
+        const wrappedBody = { user: request.body };
+        const res = await fetch(`${usersServiceUrl}/users/${id}`, {
+            method: 'PATCH',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(wrappedBody),
+        });
+        const data = await res.json();
+        return reply.send(data);
+    });
+    fastify.delete('/users/:id', { preHandler: [fastify.authenticate] }, async (request, reply) => {
+        const id = request.params.id;
+        const res = await fetch(`${usersServiceUrl}/users/${id}`, {
+            method: 'DELETE',
+        });
+        const data = await res.json();
+        return reply.send(data);
+    });
+    fastify.post('/login', async (request, reply) => {
+        const res = await fetch(`${usersServiceUrl}/login`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(request.body),
+        });
+        const setCookies = res.headers.getSetCookie();
+        if (setCookies) {
+            for (const cookie of setCookies) {
+                reply.header('set-cookie', cookie);
+            }
+        }
+        const data = await res.json();
+        return reply.send(data);
+    });
+    fastify.post('/logout', async (request, reply) => {
+        const res = await fetch(`${usersServiceUrl}/logout`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(request.body),
+        });
+        const setCookies = res.headers.getSetCookie();
+        if (setCookies) {
+            for (const cookie of setCookies) {
+                reply.header('set-cookie', cookie);
+            }
+        }
+        const data = await res.json();
+        return reply.send(data);
+    });
+    fastify.post('/refresh', { preHandler: [fastify.authenticate] }, async (request, reply) => {
+        const res = await fetch(`${usersServiceUrl}/refresh`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'x-user-id': request.user.sub
+            },
+            body: JSON.stringify(request.body),
+        });
+        const setCookies = res.headers.getSetCookie();
+        if (setCookies) {
+            for (const cookie of setCookies) {
+                reply.header('set-cookie', cookie);
+            }
+        }
+        const data = await res.json();
+        return reply.send(data);
+    });
+}
