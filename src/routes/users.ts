@@ -34,6 +34,14 @@ export default async function usersProxy(fastify: FastifyInstance, opts: Fastify
             },
             body: JSON.stringify(wrappedBody),
         });
+
+        const setCookies = res.headers.getSetCookie();
+        if (setCookies) {
+            for (const cookie of setCookies) {
+                reply.header('set-cookie', cookie);
+            }
+        }
+
         const data = await res.json();
         return reply.send(data);
     });
@@ -71,6 +79,14 @@ export default async function usersProxy(fastify: FastifyInstance, opts: Fastify
             },
             body: JSON.stringify(request.body),
         });
+
+        const setCookies = res.headers.getSetCookie();
+        if (setCookies) {
+            for (const cookie of setCookies) {
+                reply.header('set-cookie', cookie);
+            }
+        }
+
         const data = await res.json();
         return reply.send(data);
     });
@@ -83,6 +99,14 @@ export default async function usersProxy(fastify: FastifyInstance, opts: Fastify
             },
             body: JSON.stringify(request.body),
         });
+
+        const setCookies = res.headers.getSetCookie();
+        if (setCookies) {
+            for (const cookie of setCookies) {
+                reply.header('set-cookie', cookie);
+            }
+        }
+
         const data = await res.json();
         return reply.send(data);
     });
@@ -96,6 +120,14 @@ export default async function usersProxy(fastify: FastifyInstance, opts: Fastify
             },
             body: JSON.stringify(request.body),
         });
+
+        const setCookies = res.headers.getSetCookie();
+        if (setCookies) {
+            for (const cookie of setCookies) {
+                reply.header('set-cookie', cookie);
+            }
+        }
+
         const data = await res.json();
         return reply.send(data)
     });
