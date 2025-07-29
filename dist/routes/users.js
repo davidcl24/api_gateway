@@ -1,5 +1,5 @@
 export default async function usersProxy(fastify, opts) {
-    const usersServiceUrl = process.env.USERS_SERVICE_URL || 'http://localhost:4000';
+    const usersServiceUrl = process.env.USERS_SERVICE_URL || 'http://localhost:4000/api';
     fastify.get('/users', { preHandler: [fastify.authenticate] }, async (request, reply) => {
         const res = await fetch(`${usersServiceUrl}/users`, {
             method: 'GET',

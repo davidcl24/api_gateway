@@ -1,7 +1,7 @@
 import httpProxy from '@fastify/http-proxy';
 export default async function favouritesProxy(fastify, opts) {
-    const favsServiceUrl = process.env.FAVOURITES_SERVICE_URL || 'http://localhost:4000';
-    const contentsServiceUrl = process.env.CONTENTS_SERVICE_URL || 'http://localhost:4000';
+    const favsServiceUrl = process.env.FAVOURITES_SERVICE_URL || 'http://localhost:4000/api';
+    const contentsServiceUrl = process.env.CONTENTS_SERVICE_URL || 'http://localhost:4000/api';
     fastify.get('/favourites/user/:id', async (request, reply) => {
         const id = request.params.id;
         const res = await fetch(`${favsServiceUrl}/favourites/user/${id}`, {

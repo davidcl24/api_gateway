@@ -4,7 +4,7 @@ import fs from 'fs';
 import path from 'path';
 
 export default async function contentsProxy(fastify: FastifyInstance, opts: FastifyPluginOptions) {
-    const contentsServiceUrl = process.env.CONTENTS_SERVICE_URL || 'http://localhost:4000';
+    const contentsServiceUrl = process.env.CONTENTS_SERVICE_URL || 'http://localhost:4000/api';
 
     registerActors(fastify, contentsServiceUrl);
     registerDirectors(fastify, contentsServiceUrl);
