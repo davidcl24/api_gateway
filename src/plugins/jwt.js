@@ -6,7 +6,6 @@ import fp from 'fastify-plugin';
 export default fp(
   async function jwtPlugin(fastify, opts) {
       const secret = process.env.SECRET_KEY || 'dev_key';
-      console.log(secret);
 
       fastify.register(fastifyJwt, {
           secret: secret,
