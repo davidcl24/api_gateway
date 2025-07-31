@@ -111,24 +111,24 @@ export default async function usersProxy(fastify: FastifyInstance, opts: Fastify
         return reply.send(data);
     });
 
-    // fastify.post('/refresh', { preHandler: [fastify.authenticate] }, async(request, reply) => {
-    //     const res = await fetch(`${usersServiceUrl}/refresh`, {
-    //         method: 'POST',
-    //         headers: {
-    //             'Content-Type': 'application/json',
-    //             'x-user-id': request.user.sub
-    //         },
-    //         body: JSON.stringify(request.body),
-    //     });
+    fastify.post('/refresh', { preHandler: [fastify.authenticate] }, async(request, reply) => {
+        const res = await fetch(`${usersServiceUrl}/refresh`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'x-user-id': request.user.sub
+            },
+            body: JSON.stringify(request.body),
+        });
 
-    //     const setCookies = res.headers.getSetCookie();
-    //     if (setCookies) {
-    //         for (const cookie of setCookies) {
-    //             reply.header('set-cookie', cookie);
-    //         }
-    //     }
+        const setCookies = res.headers.getSetCookie();
+        if (setCookies) {
+            for (const cookie of setCookies) {
+                reply.header('set-cookie', cookie);
+            }
+        }
 
-    //     const data = await res.json();
-    //     return reply.send(data)
-    // });
+        const data = await res.json();
+        return reply.send(data)
+    });
 }
