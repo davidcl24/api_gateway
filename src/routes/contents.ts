@@ -523,7 +523,7 @@ function registerEpisodes(fastify: FastifyInstance, contentsServiceUrl: string){
         }
         
         const fileKey = `${Date.now()}_${videoFileName}`;
-        const dirPath = path.join(`uploads/raw/shows/${metadata['show_id']}/${metadata['season_num']}`);
+        const dirPath = path.join(`/uploads/raw/shows/${metadata['show_id']}/${metadata['season_num']}`);
         const filePath = path.join(dirPath, fileKey);
 
         await fs.promises.mkdir(dirPath, { recursive: true });
@@ -598,7 +598,7 @@ function registerEpisodes(fastify: FastifyInstance, contentsServiceUrl: string){
         }
         
         const fileKey = `${Date.now()}_${videoFileName}`;
-        const dirPath = path.join(`uploads/raw/shows/${metadata['show_id']}/${metadata['season_num']}`);
+        const dirPath = path.join(`/uploads/raw/shows/${metadata['show_id']}/${metadata['season_num']}`);
         const filePath = path.join(dirPath, fileKey);
 
         await fs.promises.mkdir(dirPath, { recursive: true });
