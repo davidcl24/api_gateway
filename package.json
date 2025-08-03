@@ -6,6 +6,7 @@
     "@fastify/http-proxy": "^11.3.0",
     "@fastify/jwt": "^9.1.0",
     "@fastify/multipart": "^9.0.3",
+    "bullmq": "^5.56.9",
     "fastify": "^5.4.0",
     "fastify-cors": "^6.0.3",
     "fastify-http-proxy": "^6.2.2",

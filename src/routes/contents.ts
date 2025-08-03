@@ -2,16 +2,24 @@ import type { FastifyInstance, FastifyPluginOptions } from 'fastify';
 import  multipart from '@fastify/multipart';
 import fs from 'fs';
 import path from 'path';
+import { Queue } from 'bullmq';
 
 export default async function contentsProxy(fastify: FastifyInstance, opts: FastifyPluginOptions) {
     const contentsServiceUrl = process.env.CONTENTS_SERVICE_URL || 'http://localhost:4000/api';
 
+    const queue = new Queue('video-queue', {
+        connection: {
+            host: process.env.REDIS_HOST || 'localhost',
+            port: parseInt(String(process.env.REDIS_PORT)) || 6379,
+        },
+    });
+
     registerActors(fastify, contentsServiceUrl);
     registerDirectors(fastify, contentsServiceUrl);
     registerGenres(fastify, contentsServiceUrl);
-    registerMovies(fastify, contentsServiceUrl);
+    registerMovies(fastify, contentsServiceUrl, queue);
     registerShows(fastify, contentsServiceUrl);
-    registerEpisodes(fastify, contentsServiceUrl);
+    registerEpisodes(fastify, contentsServiceUrl, queue);
 }
 
 function registerActors(fastify: FastifyInstance, contentsServiceUrl: string) {
@@ -234,7 +242,7 @@ function registerGenres(fastify: FastifyInstance, contentsServiceUrl: string) {
     });
 }
 
-function registerMovies(fastify: FastifyInstance, contentsServiceUrl: string) {
+function registerMovies(fastify: FastifyInstance, contentsServiceUrl: string, queue: Queue) {
     interface Params {
         id: String
     }
@@ -264,6 +272,13 @@ function registerMovies(fastify: FastifyInstance, contentsServiceUrl: string) {
 
         await fs.promises.mkdir(dirPath, { recursive: true });
         await fs.promises.writeFile(filePath, videoFileBuffer);
+
+        await queue.add('ffmpeg-conversion', {
+            'input_path': filePath,
+            'output_folder': `/uploads/hls/movies/${fileKey}`,
+            'resolutions': [1080, 720, 480],
+            'file_key': fileKey
+        });
 
         const movieData = {
             ...metadata,
@@ -355,6 +370,13 @@ function registerMovies(fastify: FastifyInstance, contentsServiceUrl: string) {
 
         await fs.promises.mkdir(dirPath, { recursive: true });
         await fs.promises.writeFile(filePath, videoFileBuffer);
+
+        await queue.add('ffmpeg-conversion', {
+            'input_path': filePath,
+            'output_folder': `/uploads/hls/movies/${fileKey}`,
+            'resolutions': [1080, 720, 480],
+            'file_key': fileKey
+        });
 
         const movieData = {
             ...metadata,
@@ -497,7 +519,7 @@ function registerShows(fastify: FastifyInstance, contentsServiceUrl: string){
     });
 }
 
-function registerEpisodes(fastify: FastifyInstance, contentsServiceUrl: string){
+function registerEpisodes(fastify: FastifyInstance, contentsServiceUrl: string, queue: Queue){
       interface Params {
         id: String,
         seasonNum: String
@@ -528,6 +550,13 @@ function registerEpisodes(fastify: FastifyInstance, contentsServiceUrl: string){
 
         await fs.promises.mkdir(dirPath, { recursive: true });
         await fs.promises.writeFile(filePath, videoFileBuffer);
+
+        await queue.add('ffmpeg-conversion', {
+            'input_path': filePath,
+            'output_folder': `/uploads/hls/shows/${metadata['show_id']}/${metadata['season_num']}`,
+            'resolutions': [1080, 720, 480],
+            'file_key': fileKey
+        });
 
         const episodeData = {
             ...metadata,
@@ -603,6 +632,13 @@ function registerEpisodes(fastify: FastifyInstance, contentsServiceUrl: string){
 
         await fs.promises.mkdir(dirPath, { recursive: true });
         await fs.promises.writeFile(filePath, videoFileBuffer);
+
+        await queue.add('ffmpeg-conversion', {
+            'input_path': filePath,
+            'output_folder': `/uploads/hls/shows/${metadata['show_id']}/${metadata['season_num']}`,
+            'resolutions': [1080, 720, 480],
+            'file_key': fileKey
+        });
 
         const episodeData = {
             ...metadata,

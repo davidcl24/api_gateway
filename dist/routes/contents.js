@@ -1,13 +1,20 @@
 import fs from 'fs';
 import path from 'path';
+import { Queue } from 'bullmq';
 export default async function contentsProxy(fastify, opts) {
     const contentsServiceUrl = process.env.CONTENTS_SERVICE_URL || 'http://localhost:4000/api';
+    const queue = new Queue('video-queue', {
+        connection: {
+            host: process.env.REDIS_HOST || 'localhost',
+            port: parseInt(String(process.env.REDIS_PORT)) || 6379,
+        },
+    });
     registerActors(fastify, contentsServiceUrl);
     registerDirectors(fastify, contentsServiceUrl);
     registerGenres(fastify, contentsServiceUrl);
-    registerMovies(fastify, contentsServiceUrl);
+    registerMovies(fastify, contentsServiceUrl, queue);
     registerShows(fastify, contentsServiceUrl);
-    registerEpisodes(fastify, contentsServiceUrl);
+    registerEpisodes(fastify, contentsServiceUrl, queue);
 }
 function registerActors(fastify, contentsServiceUrl) {
     fastify.get('/actors', async (request, reply) => {
@@ -185,7 +192,7 @@ function registerGenres(fastify, contentsServiceUrl) {
         return reply.send(data);
     });
 }
-function registerMovies(fastify, contentsServiceUrl) {
+function registerMovies(fastify, contentsServiceUrl, queue) {
     fastify.post('/movies', async (request, reply) => {
         const parts = request.parts();
         const metadata = {};
@@ -205,10 +212,16 @@ function registerMovies(fastify, contentsServiceUrl) {
             return reply.code(400).send({ error: 'Missing file' });
         }
         const fileKey = `${Date.now()}_${videoFileName}`;
-        const dirPath = path.join('/movies');
+        const dirPath = path.join('/uploads/raw/movies');
         const filePath = path.join(dirPath, fileKey);
         await fs.promises.mkdir(dirPath, { recursive: true });
         await fs.promises.writeFile(filePath, videoFileBuffer);
+        await queue.add('ffmpeg-conversion', {
+            'input_path': filePath,
+            'output_folder': `/uploads/hls/movies/${fileKey}`,
+            'resolutions': [1080, 720, 480],
+            'file_key': fileKey
+        });
         const movieData = {
             ...metadata,
             file_key: fileKey,
@@ -282,10 +295,16 @@ function registerMovies(fastify, contentsServiceUrl) {
             return reply.code(400).send({ error: 'Missing file' });
         }
         const fileKey = `${Date.now()}_${videoFileName}`;
-        const dirPath = path.join('/movies');
+        const dirPath = path.join('/uploads/raw/movies');
         const filePath = path.join(dirPath, fileKey);
         await fs.promises.mkdir(dirPath, { recursive: true });
         await fs.promises.writeFile(filePath, videoFileBuffer);
+        await queue.add('ffmpeg-conversion', {
+            'input_path': filePath,
+            'output_folder': `/uploads/hls/movies/${fileKey}`,
+            'resolutions': [1080, 720, 480],
+            'file_key': fileKey
+        });
         const movieData = {
             ...metadata,
             file_key: fileKey,
@@ -403,7 +422,7 @@ function registerShows(fastify, contentsServiceUrl) {
         return reply.send(data);
     });
 }
-function registerEpisodes(fastify, contentsServiceUrl) {
+function registerEpisodes(fastify, contentsServiceUrl, queue) {
     fastify.post('/episodes', async (request, reply) => {
         const parts = request.parts();
         const metadata = {};
@@ -422,10 +441,16 @@ function registerEpisodes(fastify, contentsServiceUrl) {
             return reply.code(400).send({ error: 'Missing file' });
         }
         const fileKey = `${Date.now()}_${videoFileName}`;
-        const dirPath = path.join(`/shows/${metadata['show_id']}/${metadata['season_num']}`);
+        const dirPath = path.join(`/uploads/raw/shows/${metadata['show_id']}/${metadata['season_num']}`);
         const filePath = path.join(dirPath, fileKey);
         await fs.promises.mkdir(dirPath, { recursive: true });
         await fs.promises.writeFile(filePath, videoFileBuffer);
+        await queue.add('ffmpeg-conversion', {
+            'input_path': filePath,
+            'output_folder': `/uploads/hls/shows/${metadata['show_id']}/${metadata['season_num']}`,
+            'resolutions': [1080, 720, 480],
+            'file_key': fileKey
+        });
         const episodeData = {
             ...metadata,
             file_key: fileKey,
@@ -484,10 +509,16 @@ function registerEpisodes(fastify, contentsServiceUrl) {
             return reply.code(400).send({ error: 'Missing file' });
         }
         const fileKey = `${Date.now()}_${videoFileName}`;
-        const dirPath = path.join(`/shows/${metadata['show_id']}/${metadata['season_num']}`);
+        const dirPath = path.join(`/uploads/raw/shows/${metadata['show_id']}/${metadata['season_num']}`);
         const filePath = path.join(dirPath, fileKey);
         await fs.promises.mkdir(dirPath, { recursive: true });
         await fs.promises.writeFile(filePath, videoFileBuffer);
+        await queue.add('ffmpeg-conversion', {
+            'input_path': filePath,
+            'output_folder': `/uploads/hls/shows/${metadata['show_id']}/${metadata['season_num']}`,
+            'resolutions': [1080, 720, 480],
+            'file_key': fileKey
+        });
         const episodeData = {
             ...metadata,
             file_key: fileKey,
