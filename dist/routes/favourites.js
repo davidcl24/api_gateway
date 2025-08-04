@@ -42,8 +42,6 @@ export default async function favouritesProxy(fastify, opts) {
         });
     });
     fastify.register(httpProxy, {
-        upstream: favsServiceUrl,
-        prefix: '/favourites',
-        rewritePrefix: '/favourites',
+        upstream: favsServiceUrl
     });
 }
