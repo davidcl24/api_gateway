@@ -5,13 +5,13 @@ export default async function favouritesProxy(fastify: FastifyInstance, opts: Fa
       interface Params {
         id: string
     }
-    const favsServiceUrl = process.env.FAVOURITES_SERVICE_URL || 'http://localhost:4000/api'
-    const contentsServiceUrl = process.env.CONTENTS_SERVICE_URL || 'http://localhost:4000/api';
+    const favsServiceUrl = process.env.FAVOURITES_SERVICE_URL || 'http://localhost:7600'
+    const contentsServiceUrl = process.env.CONTENTS_SERVICE_URL || 'http://localhost:8000/api';
 
     fastify.get<{ Params: Params }>('/favourites/user/:id', async (request, reply) => {
         const id = request.params.id;
 
-        const res = await fetch(`${favsServiceUrl}/favourites/user/${id}`, {
+        const res = await fetch(`${favsServiceUrl}/api/favourites/user/${id}`, {
             method: 'GET',
         });
 
@@ -57,6 +57,8 @@ export default async function favouritesProxy(fastify: FastifyInstance, opts: Fa
     });
 
     fastify.register(httpProxy, {
-        upstream: favsServiceUrl 
+        upstream: favsServiceUrl,
+        prefix: '/favourites',
+        rewritePrefix: '/api/favourites'
     });
 }
