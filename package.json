@@ -13,7 +13,8 @@
     "fs": "^0.0.1-security",
     "node-fetch": "^3.3.2",
     "path": "^0.12.7",
-    "pino-pretty": "^13.0.0"
+    "pino-pretty": "^13.0.0",
+    "util": "^0.12.5"
   },
   "devDependencies": {
     "@types/node": "^24.0.10",

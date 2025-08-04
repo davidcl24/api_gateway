@@ -1,3 +1,4 @@
+import multipart from '@fastify/multipart';
 import fs from 'fs';
 import path from 'path';
 import { Queue } from 'bullmq';
@@ -9,6 +10,7 @@ export default async function contentsProxy(fastify, opts) {
             port: parseInt(String(process.env.REDIS_PORT)) || 6379,
         },
     });
+    fastify.register(multipart);
     registerActors(fastify, contentsServiceUrl);
     registerDirectors(fastify, contentsServiceUrl);
     registerGenres(fastify, contentsServiceUrl);
@@ -216,12 +218,21 @@ function registerMovies(fastify, contentsServiceUrl, queue) {
         const filePath = path.join(dirPath, fileKey);
         await fs.promises.mkdir(dirPath, { recursive: true });
         await fs.promises.writeFile(filePath, videoFileBuffer);
-        await queue.add('ffmpeg-conversion', {
-            'input_path': filePath,
-            'output_folder': `/uploads/hls/movies/${fileKey}`,
-            'resolutions': [1080, 720, 480],
-            'file_key': fileKey
-        });
+        try {
+            await queue.add('ffmpeg-conversion', {
+                'input_path': filePath,
+                'output_folder': `/uploads/hls/movies/${fileKey}`,
+                'resolutions': [1080, 720, 480],
+                'file_key': fileKey
+            }, {
+                removeOnComplete: true,
+                removeOnFail: false,
+            });
+        }
+        catch (error) {
+            fastify.log.error('Failed to enqueue job', error);
+            return reply.code(500).send({ error: 'Failed to enqueue video conversion job.' });
+        }
         const movieData = {
             ...metadata,
             file_key: fileKey,

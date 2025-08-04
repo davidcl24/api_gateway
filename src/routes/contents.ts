@@ -14,6 +14,8 @@ export default async function contentsProxy(fastify: FastifyInstance, opts: Fast
         },
     });
 
+    fastify.register(multipart);
+
     registerActors(fastify, contentsServiceUrl);
     registerDirectors(fastify, contentsServiceUrl);
     registerGenres(fastify, contentsServiceUrl);
@@ -24,7 +26,7 @@ export default async function contentsProxy(fastify: FastifyInstance, opts: Fast
 
 function registerActors(fastify: FastifyInstance, contentsServiceUrl: string) {
     interface Params {
-        id: String
+        id: string
     }
 
     fastify.get('/actors', async (request, reply) => {
@@ -104,7 +106,7 @@ function registerActors(fastify: FastifyInstance, contentsServiceUrl: string) {
 
 function registerDirectors(fastify: FastifyInstance, contentsServiceUrl: string) {
     interface Params {
-        id: String
+        id: string
     }
 
     fastify.get('/directors', async (request, reply) => {
@@ -184,7 +186,7 @@ function registerDirectors(fastify: FastifyInstance, contentsServiceUrl: string)
 
 function registerGenres(fastify: FastifyInstance, contentsServiceUrl: string) {
     interface Params {
-        id: String
+        id: string
     }
 
     fastify.get('/genres', async (request, reply) => {
@@ -244,7 +246,7 @@ function registerGenres(fastify: FastifyInstance, contentsServiceUrl: string) {
 
 function registerMovies(fastify: FastifyInstance, contentsServiceUrl: string, queue: Queue) {
     interface Params {
-        id: String
+        id: string
     }
 
     fastify.post('/movies', async (request, reply) => {
@@ -273,12 +275,22 @@ function registerMovies(fastify: FastifyInstance, contentsServiceUrl: string, qu
         await fs.promises.mkdir(dirPath, { recursive: true });
         await fs.promises.writeFile(filePath, videoFileBuffer);
 
-        await queue.add('ffmpeg-conversion', {
-            'input_path': filePath,
-            'output_folder': `/uploads/hls/movies/${fileKey}`,
-            'resolutions': [1080, 720, 480],
-            'file_key': fileKey
-        });
+        try {
+            await queue.add('ffmpeg-conversion', {
+                'input_path': filePath,
+                'output_folder': `/uploads/hls/movies/${fileKey}`,
+                'resolutions': [1080, 720, 480],
+                'file_key': fileKey
+            }, 
+            {
+                removeOnComplete: true,
+                removeOnFail: false,
+            });
+        } catch (error) {
+            fastify.log.error('Failed to enqueue job', error);
+            return reply.code(500).send({ error: 'Failed to enqueue video conversion job.' });
+        }
+      
 
         const movieData = {
             ...metadata,
@@ -407,7 +419,7 @@ function registerMovies(fastify: FastifyInstance, contentsServiceUrl: string, qu
 
 function registerShows(fastify: FastifyInstance, contentsServiceUrl: string){
      interface Params {
-        id: String
+        id: string
     }
 
     fastify.post('/shows', async (request, reply) => {
@@ -521,8 +533,8 @@ function registerShows(fastify: FastifyInstance, contentsServiceUrl: string){
 
 function registerEpisodes(fastify: FastifyInstance, contentsServiceUrl: string, queue: Queue){
       interface Params {
-        id: String,
-        seasonNum: String
+        id: string,
+        seasonNum: string
     }
     fastify.post('/episodes', async (request, reply) => {
         const parts = request.parts();
