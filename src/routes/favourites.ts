@@ -57,6 +57,6 @@ export default async function favouritesProxy(fastify: FastifyInstance, opts: Fa
     });
 
     fastify.register(httpProxy, {
-        upstream: favsServiceUrl
+        upstream: favsServiceUrl 
     });
 }
