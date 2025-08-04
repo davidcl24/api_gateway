@@ -3,7 +3,7 @@ import fs from 'fs';
 import path from 'path';
 import { Queue } from 'bullmq';
 export default async function contentsProxy(fastify, opts) {
-    const contentsServiceUrl = process.env.CONTENTS_SERVICE_URL || 'http://localhost:4000/api';
+    const contentsServiceUrl = process.env.CONTENTS_SERVICE_URL || 'http://localhost:8000/api';
     const queue = new Queue('video-queue', {
         connection: {
             host: process.env.REDIS_HOST || 'localhost',
