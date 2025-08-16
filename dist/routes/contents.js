@@ -10,7 +10,11 @@ export default async function contentsProxy(fastify, opts) {
             port: parseInt(String(process.env.REDIS_PORT)) || 6379,
         },
     });
-    fastify.register(multipart);
+    fastify.register(multipart, {
+        limits: {
+            fileSize: 1000 * 1024 * 1024
+        }
+    });
     registerActors(fastify, contentsServiceUrl);
     registerDirectors(fastify, contentsServiceUrl);
     registerGenres(fastify, contentsServiceUrl);

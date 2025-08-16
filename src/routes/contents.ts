@@ -14,7 +14,11 @@ export default async function contentsProxy(fastify: FastifyInstance, opts: Fast
         },
     });
 
-    fastify.register(multipart);
+     fastify.register(multipart, {
+        limits: {
+            fileSize: 1000 * 1024 * 1024
+        }
+    });
 
     registerActors(fastify, contentsServiceUrl);
     registerDirectors(fastify, contentsServiceUrl);
