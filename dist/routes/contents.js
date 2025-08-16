@@ -220,10 +220,10 @@ function registerMovies(fastify, contentsServiceUrl, queue) {
         await fs.promises.writeFile(filePath, videoFileBuffer);
         try {
             await queue.add('ffmpeg-conversion', {
-                'input_path': filePath,
-                'output_folder': `/uploads/hls/movies/${fileKey}`,
+                'inputPath': filePath,
+                'outputFolder': `/uploads/hls/movies/${fileKey}`,
                 'resolutions': [1080, 720, 480],
-                'file_key': fileKey
+                'fileKey': fileKey
             }, {
                 removeOnComplete: true,
                 removeOnFail: false,
