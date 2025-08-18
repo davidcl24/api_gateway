@@ -209,7 +209,7 @@ function registerMovies(fastify, contentsServiceUrl, queue) {
                 videoFileName = part.filename;
                 videoFileBuffer = await part.toBuffer();
             }
-            else {
+            else if (part.fieldname != 'url') {
                 metadata[part.fieldname] = part.value;
             }
         }
@@ -239,6 +239,8 @@ function registerMovies(fastify, contentsServiceUrl, queue) {
         }
         const movieData = {
             ...metadata,
+            genre_id: metadata.genre_id ? parseInt(metadata.genre_id, 10) : null,
+            rating: metadata.rating ? parseFloat(metadata.rating) : null,
             file_key: fileKey,
         };
         const res = await fetch(`${contentsServiceUrl}/movies`, {
@@ -301,7 +303,7 @@ function registerMovies(fastify, contentsServiceUrl, queue) {
                 videoFileName = part.filename;
                 videoFileBuffer = await part.toBuffer();
             }
-            else {
+            else if (part.fieldname != 'url') {
                 metadata[part.fieldname] = part.value;
             }
         }
@@ -322,6 +324,8 @@ function registerMovies(fastify, contentsServiceUrl, queue) {
         });
         const movieData = {
             ...metadata,
+            genre_id: metadata.genre_id ? parseInt(metadata.genre_id, 10) : null,
+            rating: metadata.rating ? parseFloat(metadata.rating) : null,
             file_key: fileKey,
         };
         const res = await fetch(`${contentsServiceUrl}/movies/${id}`, {
@@ -348,13 +352,16 @@ function registerShows(fastify, contentsServiceUrl) {
         const parts = request.parts();
         const metadata = {};
         for await (const part of parts) {
-            if (part.type === 'field') {
+            if (part.type === 'field' && part.fieldname != 'url') {
                 metadata[part.fieldname] = part.value;
             }
         }
         ;
         const showData = {
             ...metadata,
+            seasons_num: metadata.seasons_num ? parseInt(metadata.seasons_num, 10) : null,
+            genre_id: metadata.genre_id ? parseInt(metadata.genre_id, 10) : null,
+            rating: metadata.rating ? parseFloat(metadata.rating) : null
         };
         const res = await fetch(`${contentsServiceUrl}/shows`, {
             method: 'POST',
@@ -410,13 +417,16 @@ function registerShows(fastify, contentsServiceUrl) {
         const parts = request.parts();
         const metadata = {};
         for await (const part of parts) {
-            if (part.type === 'field') {
+            if (part.type === 'field' && part.fieldname != 'url') {
                 metadata[part.fieldname] = part.value;
             }
         }
         ;
         const showData = {
             ...metadata,
+            seasons_num: metadata.seasons_num ? parseInt(metadata.seasons_num, 10) : null,
+            genre_id: metadata.genre_id ? parseInt(metadata.genreid, 10) : null,
+            rating: metadata.rating ? parseFloat(metadata.rating) : null
         };
         const res = await fetch(`${contentsServiceUrl}/shows/${id}`, {
             method: 'PATCH',
@@ -448,7 +458,7 @@ function registerEpisodes(fastify, contentsServiceUrl, queue) {
                 videoFileName = part.filename;
                 videoFileBuffer = await part.toBuffer();
             }
-            else {
+            else if (part.fieldname != 'url') {
                 metadata[part.fieldname] = part.value;
             }
         }
@@ -468,6 +478,8 @@ function registerEpisodes(fastify, contentsServiceUrl, queue) {
         });
         const episodeData = {
             ...metadata,
+            season_num: metadata.season_num ? parseInt(metadata.season_num, 10) : null,
+            episode_num: metadata.episode_num ? parseInt(metadata.episode_num, 10) : null,
             file_key: fileKey,
         };
         const res = await fetch(`${contentsServiceUrl}/episodes`, {
@@ -516,7 +528,7 @@ function registerEpisodes(fastify, contentsServiceUrl, queue) {
                 videoFileName = part.filename;
                 videoFileBuffer = await part.toBuffer();
             }
-            else {
+            else if (part.fieldname != 'url') {
                 metadata[part.fieldname] = part.value;
             }
         }
@@ -536,6 +548,8 @@ function registerEpisodes(fastify, contentsServiceUrl, queue) {
         });
         const episodeData = {
             ...metadata,
+            season_num: metadata.season_num ? parseInt(metadata.season_num, 10) : null,
+            episode_num: metadata.episode_num ? parseInt(metadata.episode_num, 10) : null,
             file_key: fileKey,
         };
         const res = await fetch(`${contentsServiceUrl}/episodes/${id}`, {

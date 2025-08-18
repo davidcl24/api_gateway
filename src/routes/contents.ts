@@ -263,7 +263,7 @@ function registerMovies(fastify: FastifyInstance, contentsServiceUrl: string, qu
             if (part.type === 'file') {
                 videoFileName = part.filename;
                 videoFileBuffer = await part.toBuffer();
-            } else {
+            } else if (part.fieldname != 'url') {
                 metadata[part.fieldname] = part.value;
             }
         };
@@ -298,6 +298,8 @@ function registerMovies(fastify: FastifyInstance, contentsServiceUrl: string, qu
 
         const movieData = {
             ...metadata,
+            genre_id: metadata.genre_id ? parseInt(metadata.genre_id, 10) : null,
+            rating: metadata.rating ? parseFloat(metadata.rating) : null,
             file_key: fileKey,
         }
 
@@ -371,7 +373,7 @@ function registerMovies(fastify: FastifyInstance, contentsServiceUrl: string, qu
             if (part.type === 'file') {
                 videoFileName = part.filename;
                 videoFileBuffer = await part.toBuffer();
-            } else {
+            } else if (part.fieldname != 'url') {
                 metadata[part.fieldname] = part.value;
             }
         };
@@ -396,6 +398,8 @@ function registerMovies(fastify: FastifyInstance, contentsServiceUrl: string, qu
 
         const movieData = {
             ...metadata,
+            genre_id: metadata.genre_id ? parseInt(metadata.genre_id, 10) : null,
+            rating: metadata.rating ? parseFloat(metadata.rating) : null,
             file_key: fileKey,
         }
 
@@ -431,13 +435,16 @@ function registerShows(fastify: FastifyInstance, contentsServiceUrl: string){
         const metadata: { [key: string]: any } = {};
 
         for await (const part of parts) {
-            if (part.type === 'field') {
+            if (part.type === 'field' && part.fieldname != 'url') {
                 metadata[part.fieldname] = part.value;
             }
         };
 
         const showData = {
             ...metadata,
+            seasons_num: metadata.seasons_num ? parseInt(metadata.seasons_num, 10) : null,
+            genre_id: metadata.genre_id ? parseInt(metadata.genre_id, 10) : null,
+            rating: metadata.rating ? parseFloat(metadata.rating) : null
         }
         
         const res = await fetch(`${contentsServiceUrl}/shows`, {
@@ -504,13 +511,16 @@ function registerShows(fastify: FastifyInstance, contentsServiceUrl: string){
         const metadata: { [key: string]: any } = {};
 
         for await (const part of parts) {
-            if (part.type === 'field') {
+            if (part.type === 'field' && part.fieldname != 'url') {
                 metadata[part.fieldname] = part.value;
             }
         };
 
         const showData = {
             ...metadata,
+            seasons_num: metadata.seasons_num ? parseInt(metadata.seasons_num, 10) : null,
+            genre_id: metadata.genre_id ? parseInt(metadata.genreid, 10) : null,
+            rating: metadata.rating ? parseFloat(metadata.rating) : null
         }
 
         const res = await fetch(`${contentsServiceUrl}/shows/${id}`, {
@@ -551,7 +561,7 @@ function registerEpisodes(fastify: FastifyInstance, contentsServiceUrl: string, 
             if (part.type === 'file') {
                 videoFileName = part.filename;
                 videoFileBuffer = await part.toBuffer();
-            } else {
+            } else if (part.fieldname != 'url') {
                 metadata[part.fieldname] = part.value;
             }
         }
@@ -576,6 +586,8 @@ function registerEpisodes(fastify: FastifyInstance, contentsServiceUrl: string, 
 
         const episodeData = {
             ...metadata,
+            season_num: metadata.season_num ? parseInt(metadata.season_num, 10) : null,
+            episode_num: metadata.episode_num ? parseInt(metadata.episode_num, 10) : null,
             file_key: fileKey,
         }
 
@@ -633,7 +645,7 @@ function registerEpisodes(fastify: FastifyInstance, contentsServiceUrl: string, 
             if (part.type === 'file') {
                 videoFileName = part.filename;
                 videoFileBuffer = await part.toBuffer();
-            } else {
+            } else if (part.fieldname != 'url') {
                 metadata[part.fieldname] = part.value;
             }
         }
@@ -658,6 +670,8 @@ function registerEpisodes(fastify: FastifyInstance, contentsServiceUrl: string, 
 
         const episodeData = {
             ...metadata,
+            season_num: metadata.season_num ? parseInt(metadata.season_num, 10) : null,
+            episode_num: metadata.episode_num ? parseInt(metadata.episode_num, 10) : null,
             file_key: fileKey,
         }
 
