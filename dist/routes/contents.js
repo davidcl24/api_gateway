@@ -425,7 +425,7 @@ function registerShows(fastify, contentsServiceUrl) {
         const showData = {
             ...metadata,
             seasons_num: metadata.seasons_num ? parseInt(metadata.seasons_num, 10) : null,
-            genre_id: metadata.genre_id ? parseInt(metadata.genreid, 10) : null,
+            genre_id: metadata.genre_id ? parseInt(metadata.genre_id, 10) : null,
             rating: metadata.rating ? parseFloat(metadata.rating) : null
         };
         const res = await fetch(`${contentsServiceUrl}/shows/${id}`, {
