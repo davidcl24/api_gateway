@@ -241,6 +241,7 @@ function registerMovies(fastify, contentsServiceUrl, queue) {
             ...metadata,
             genre_id: metadata.genre_id ? parseInt(metadata.genre_id, 10) : null,
             rating: metadata.rating ? parseFloat(metadata.rating) : null,
+            release_date: metadata.release_date ? metadata.release_date : null,
             file_key: fileKey,
         };
         const res = await fetch(`${contentsServiceUrl}/movies`, {
@@ -326,6 +327,7 @@ function registerMovies(fastify, contentsServiceUrl, queue) {
             ...metadata,
             genre_id: metadata.genre_id ? parseInt(metadata.genre_id, 10) : null,
             rating: metadata.rating ? parseFloat(metadata.rating) : null,
+            release_date: metadata.release_date ? metadata.release_date : null,
             file_key: fileKey,
         };
         const res = await fetch(`${contentsServiceUrl}/movies/${id}`, {
@@ -361,7 +363,8 @@ function registerShows(fastify, contentsServiceUrl) {
             ...metadata,
             seasons_num: metadata.seasons_num ? parseInt(metadata.seasons_num, 10) : null,
             genre_id: metadata.genre_id ? parseInt(metadata.genre_id, 10) : null,
-            rating: metadata.rating ? parseFloat(metadata.rating) : null
+            rating: metadata.rating ? parseFloat(metadata.rating) : null,
+            release_date: metadata.release_date ? metadata.release_date : null
         };
         const res = await fetch(`${contentsServiceUrl}/shows`, {
             method: 'POST',
@@ -426,7 +429,8 @@ function registerShows(fastify, contentsServiceUrl) {
             ...metadata,
             seasons_num: metadata.seasons_num ? parseInt(metadata.seasons_num, 10) : null,
             genre_id: metadata.genre_id ? parseInt(metadata.genre_id, 10) : null,
-            rating: metadata.rating ? parseFloat(metadata.rating) : null
+            rating: metadata.rating ? parseFloat(metadata.rating) : null,
+            release_date: metadata.release_date ? metadata.release_date : null
         };
         const res = await fetch(`${contentsServiceUrl}/shows/${id}`, {
             method: 'PATCH',
@@ -480,6 +484,7 @@ function registerEpisodes(fastify, contentsServiceUrl, queue) {
             ...metadata,
             season_num: metadata.season_num ? parseInt(metadata.season_num, 10) : null,
             episode_num: metadata.episode_num ? parseInt(metadata.episode_num, 10) : null,
+            release_date: metadata.release_date ? metadata.release_date : null,
             file_key: fileKey,
         };
         const res = await fetch(`${contentsServiceUrl}/episodes`, {
@@ -550,6 +555,7 @@ function registerEpisodes(fastify, contentsServiceUrl, queue) {
             ...metadata,
             season_num: metadata.season_num ? parseInt(metadata.season_num, 10) : null,
             episode_num: metadata.episode_num ? parseInt(metadata.episode_num, 10) : null,
+            release_date: metadata.release_date ? metadata.release_date : null,
             file_key: fileKey,
         };
         const res = await fetch(`${contentsServiceUrl}/episodes/${id}`, {
