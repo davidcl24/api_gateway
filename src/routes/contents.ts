@@ -583,7 +583,7 @@ function registerEpisodes(fastify: FastifyInstance, contentsServiceUrl: string, 
 
         await queue.add('ffmpeg-conversion', {
             'input_path': filePath,
-            'output_folder': `/uploads/hls/shows/${metadata['show_id']}/${metadata['season_num']}`,
+            'output_folder': `/uploads/hls/shows/${metadata['show_id']}/${metadata['season_num']}/${fileKey}`,
             'resolutions': [1080, 720, 480],
             'file_key': fileKey
         });
@@ -668,7 +668,7 @@ function registerEpisodes(fastify: FastifyInstance, contentsServiceUrl: string, 
 
         await queue.add('ffmpeg-conversion', {
             'input_path': filePath,
-            'output_folder': `/uploads/hls/shows/${metadata['show_id']}/${metadata['season_num']}`,
+            'output_folder': `/uploads/hls/shows/${metadata['show_id']}/${metadata['season_num']}/${fileKey}`,
             'resolutions': [1080, 720, 480],
             'file_key': fileKey
         });
