@@ -269,6 +269,14 @@ function registerMovies(fastify, contentsServiceUrl, queue) {
         const data = await res.json();
         return reply.send(data);
     });
+    fastify.get('/movies/:id/extended', async (request, reply) => {
+        const id = request.params.id;
+        const res = await fetch(`${contentsServiceUrl}/movies/${id}/extended`, {
+            method: 'GET',
+        });
+        const data = await res.json();
+        return reply.send(data);
+    });
     fastify.get('/genres/:id/movies', async (request, reply) => {
         const id = request.params.id;
         const res = await fetch(`${contentsServiceUrl}/genres/${id}/movies`, {
@@ -386,6 +394,14 @@ function registerShows(fastify, contentsServiceUrl) {
     fastify.get('/shows/:id', async (request, reply) => {
         const id = request.params.id;
         const res = await fetch(`${contentsServiceUrl}/shows/${id}`, {
+            method: 'GET',
+        });
+        const data = await res.json();
+        return reply.send(data);
+    });
+    fastify.get('/shows/:id/extended', async (request, reply) => {
+        const id = request.params.id;
+        const res = await fetch(`${contentsServiceUrl}/shows/${id}/extended`, {
             method: 'GET',
         });
         const data = await res.json();
