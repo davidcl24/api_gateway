@@ -240,6 +240,7 @@ function registerMovies(fastify, contentsServiceUrl, queue) {
         const movieData = {
             ...metadata,
             genre_id: metadata.genre_id ? parseInt(metadata.genre_id, 10) : null,
+            directors_ids: [].concat(metadata.directors_ids).map(id => parseInt(id, 10)).filter(n => !isNaN(n)),
             rating: metadata.rating ? parseFloat(metadata.rating) : null,
             release_date: metadata.release_date ? metadata.release_date : null,
             file_key: fileKey,
@@ -334,6 +335,7 @@ function registerMovies(fastify, contentsServiceUrl, queue) {
         const movieData = {
             ...metadata,
             genre_id: metadata.genre_id ? parseInt(metadata.genre_id, 10) : null,
+            directors_ids: [].concat(metadata.directors_ids).map(id => parseInt(id, 10)).filter(n => !isNaN(n)),
             rating: metadata.rating ? parseFloat(metadata.rating) : null,
             release_date: metadata.release_date ? metadata.release_date : null,
             file_key: fileKey,
@@ -371,6 +373,7 @@ function registerShows(fastify, contentsServiceUrl) {
             ...metadata,
             seasons_num: metadata.seasons_num ? parseInt(metadata.seasons_num, 10) : null,
             genre_id: metadata.genre_id ? parseInt(metadata.genre_id, 10) : null,
+            directors_ids: [].concat(metadata.directors_ids).map(id => parseInt(id, 10)).filter(n => !isNaN(n)),
             rating: metadata.rating ? parseFloat(metadata.rating) : null,
             release_date: metadata.release_date ? metadata.release_date : null
         };
@@ -445,9 +448,11 @@ function registerShows(fastify, contentsServiceUrl) {
             ...metadata,
             seasons_num: metadata.seasons_num ? parseInt(metadata.seasons_num, 10) : null,
             genre_id: metadata.genre_id ? parseInt(metadata.genre_id, 10) : null,
+            directors_ids: [].concat(metadata.directors_ids).map(id => parseInt(id, 10)).filter(n => !isNaN(n)),
             rating: metadata.rating ? parseFloat(metadata.rating) : null,
             release_date: metadata.release_date ? metadata.release_date : null
         };
+        console.log(showData);
         const res = await fetch(`${contentsServiceUrl}/shows/${id}`, {
             method: 'PATCH',
             headers: {
