@@ -56,12 +56,7 @@ export default fp(async function jwtPlugin(fastify, opts) {
                             reply.header('set-cookie', cookie);
                         }
                     }
-                    const data = await res.json();
-                    const newAccessToken = data.access_token;
-                    if (!newAccessToken) {
-                        reply.code(401).send({ error: 'No new access token provided' });
-                        return;
-                    }
+                    const newAccessToken = setCookies[1].match(/access_token=([^;]+)/)[1];
                     const newDecoded = await fastify.jwt.verify(newAccessToken);
                     request.user = newDecoded;
                 }
