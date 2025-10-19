@@ -10,11 +10,14 @@ export default fp(async function jwtPlugin(fastify, opts) {
     });
     fastify.register(fastifyCookie, {
         secret: secret,
+        cookie: {
+            cookieName: 'access_token',
+            signed: false
+        }
     });
     fastify.decorate("authenticate", async function (request, reply) {
         try {
-            log('me cago');
-            var accessToken = request.cookies.access_token;
+            const accessToken = request.cookies.access_token;
             log('access token: ', accessToken);
             var refreshToken = request.cookies.refresh_token;
             log('refresh Token: ', refreshToken);
@@ -24,7 +27,7 @@ export default fp(async function jwtPlugin(fastify, opts) {
             }
             let decoded;
             if (accessToken) {
-                decoded = await request.jwtVerify({ jwt: accessToken });
+                decoded = await fastify.jwt.verify(accessToken);
             }
             else {
                 throw new Error('Access token missing or invalid');
@@ -38,7 +41,7 @@ export default fp(async function jwtPlugin(fastify, opts) {
                     return;
                 }
                 try {
-                    const refreshDecoded = await request.jwtVerify({ jwt: refreshToken });
+                    const refreshDecoded = await fastify.jwt.verify(refreshToken);
                     const res = await fetch(`http://localhost:4000/api/refresh`, {
                         method: 'POST',
                         headers: {

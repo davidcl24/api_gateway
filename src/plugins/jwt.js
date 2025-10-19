@@ -15,14 +15,17 @@ export default fp(
 
       fastify.register(fastifyCookie, {
           secret: secret,
+          cookie: {
+            cookieName: 'access_token', 
+            signed: false  
+          }
       });
 
       fastify.decorate("authenticate", async function (request, reply) {
       try {
-        log('me cago');
         const accessToken = request.cookies.access_token;
         log('access token: ', accessToken)
-        const refreshToken = request.cookies.refresh_token;
+        var refreshToken = request.cookies.refresh_token;
         log('refresh Token: ', refreshToken)
 
         if (!accessToken && !refreshToken) {
@@ -32,20 +35,20 @@ export default fp(
 
         let decoded;
         if (accessToken) {
-          decoded = await request.jwtVerify({jwt: accessToken});
+          decoded = await fastify.jwt.verify(accessToken);
         } else {
           throw new Error('Access token missing or invalid');
         }
 
         request.user = decoded;
       } catch (err) {
-        if (err.name === 'TokenExpiredError' || err.name === 'JsonWebTokenError') {
+        if (err.message === 'Access token missing or invalid') {
           if (!refreshToken) {
             reply.code(401).send({ error: 'Refresh token missing' });
             return;
           }
           try {
-            const refreshDecoded = await request.jwtVerify({jwt: refreshToken});
+            const refreshDecoded = await fastify.jwt.verify(refreshToken);
             const res = await fetch(`http://localhost:4000/api/refresh`, {
               method: 'POST',
                 headers: {
