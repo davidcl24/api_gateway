@@ -3,7 +3,7 @@ import type { FastifyInstance, FastifyPluginOptions } from 'fastify';
 
 export default async function favouritesProxy(fastify: FastifyInstance, opts: FastifyPluginOptions) {
       interface Params {
-        id: string
+        id: string,
     }
     const favsServiceUrl = process.env.FAVOURITES_SERVICE_URL || 'http://localhost:7600'
     const contentsServiceUrl = process.env.CONTENTS_SERVICE_URL || 'http://localhost:8000/api';
@@ -103,6 +103,28 @@ export default async function favouritesProxy(fastify: FastifyInstance, opts: Fa
             movies: movieData,
             shows: showData,
         });
+    });
+
+    fastify.get<{ Params: Params }>('/favourites/user/personal/movie/:id' , { preHandler: [fastify.authenticate] },  async (request, reply) => {
+        const sub = request.user.sub;
+        const movieId = request.params.id;
+
+        const res = await fetch(`${favsServiceUrl}/user/${sub}/movie/${movieId}`, {
+            method: 'GET',
+        });
+        const data = await res.json();
+        return reply.send(data);
+    });
+
+    fastify.get<{ Params: Params }>('/favourites/user/personal/show/:id' , { preHandler: [fastify.authenticate] },  async (request, reply) => {
+        const sub = request.user.sub;
+        const showId = request.params.id;
+
+        const res = await fetch(`${favsServiceUrl}/user/${sub}/show/${showId}`, {
+            method: 'GET',
+        });
+        const data = await res.json();
+        return reply.send(data);
     });
 
     fastify.register(httpProxy, {

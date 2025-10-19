@@ -80,6 +80,24 @@ export default async function favouritesProxy(fastify, opts) {
             shows: showData,
         });
     });
+    fastify.get('/favourites/user/personal/movie/:id', { preHandler: [fastify.authenticate] }, async (request, reply) => {
+        const sub = request.user.sub;
+        const movieId = request.params.id;
+        const res = await fetch(`${favsServiceUrl}/user/${sub}/movie/${movieId}`, {
+            method: 'GET',
+        });
+        const data = await res.json();
+        return reply.send(data);
+    });
+    fastify.get('/favourites/user/personal/show/:id', { preHandler: [fastify.authenticate] }, async (request, reply) => {
+        const sub = request.user.sub;
+        const showId = request.params.id;
+        const res = await fetch(`${favsServiceUrl}/user/${sub}/show/${showId}`, {
+            method: 'GET',
+        });
+        const data = await res.json();
+        return reply.send(data);
+    });
     fastify.register(httpProxy, {
         upstream: favsServiceUrl,
         prefix: '/favourites',
