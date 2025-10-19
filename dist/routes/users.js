@@ -15,6 +15,14 @@ export default async function usersProxy(fastify, opts) {
         const data = await res.json();
         return reply.send(data);
     });
+    fastify.get('/users/personal', { preHandler: [fastify.authenticate] }, async (request, reply) => {
+        const sub = request.user.sub;
+        const res = await fetch(`${usersServiceUrl}/users/${sub}`, {
+            method: 'GET',
+        });
+        const data = await res.json();
+        return reply.send(data);
+    });
     fastify.post('/users', async (request, reply) => {
         const wrappedBody = { user: request.body };
         const res = await fetch(`${usersServiceUrl}/users`, {
@@ -46,9 +54,30 @@ export default async function usersProxy(fastify, opts) {
         const data = await res.json();
         return reply.send(data);
     });
+    fastify.patch('/users/personal', { preHandler: [fastify.authenticate] }, async (request, reply) => {
+        const sub = request.user.sub;
+        const wrappedBody = { user: request.body };
+        const res = await fetch(`${usersServiceUrl}/users/${sub}`, {
+            method: 'PATCH',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(wrappedBody),
+        });
+        const data = await res.json();
+        return reply.send(data);
+    });
     fastify.delete('/users/:id', { preHandler: [fastify.authenticate] }, async (request, reply) => {
         const id = request.params.id;
         const res = await fetch(`${usersServiceUrl}/users/${id}`, {
+            method: 'DELETE',
+        });
+        const data = await res.json();
+        return reply.send(data);
+    });
+    fastify.delete('/users/personal', { preHandler: [fastify.authenticate] }, async (request, reply) => {
+        const sub = request.user.sub;
+        const res = await fetch(`${usersServiceUrl}/users/${sub}`, {
             method: 'DELETE',
         });
         const data = await res.json();
@@ -88,22 +117,22 @@ export default async function usersProxy(fastify, opts) {
         const data = await res.json();
         return reply.send(data);
     });
-    fastify.post('/refresh', { preHandler: [fastify.authenticate] }, async (request, reply) => {
-        const res = await fetch(`${usersServiceUrl}/refresh`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'x-user-id': request.user.sub
-            },
-            body: JSON.stringify(request.body),
-        });
-        const setCookies = res.headers.getSetCookie();
-        if (setCookies) {
-            for (const cookie of setCookies) {
-                reply.header('set-cookie', cookie);
-            }
-        }
-        const data = await res.json();
-        return reply.send(data);
-    });
+    // fastify.post('/refresh', { preHandler: [fastify.authenticate] }, async(request, reply) => {
+    //     const res = await fetch(`${usersServiceUrl}/refresh`, {
+    //         method: 'POST',
+    //         headers: {
+    //             'Content-Type': 'application/json',
+    //             'x-user-id': request.user.sub
+    //         },
+    //         body: JSON.stringify(request.body),
+    //     });
+    //     const setCookies = res.headers.getSetCookie();
+    //     if (setCookies) {
+    //         for (const cookie of setCookies) {
+    //             reply.header('set-cookie', cookie);
+    //         }
+    //     }
+    //     const data = await res.json();
+    //     return reply.send(data)
+    // });
 }

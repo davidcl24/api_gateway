@@ -15,9 +15,19 @@ export default async function usersProxy(fastify: FastifyInstance, opts: Fastify
     });
 
     fastify.get<{ Params: Params }>('/users/:id', { preHandler: [fastify.authenticate] }, async (request, reply) => {
-        const id = request.params.id
+        const id = request.params.id;
 
         const res = await fetch(`${usersServiceUrl}/users/${id}`, {
+            method: 'GET',
+        });
+        const data = await res.json();
+        return reply.send(data);
+    });
+
+    fastify.get('/users/personal', { preHandler: [fastify.authenticate] }, async(request, reply) => {
+        const sub = request.user.sub;
+
+        const res = await fetch(`${usersServiceUrl}/users/${sub}`, {
             method: 'GET',
         });
         const data = await res.json();
@@ -47,10 +57,25 @@ export default async function usersProxy(fastify: FastifyInstance, opts: Fastify
     });
 
     fastify.patch<{ Params: Params }>('/users/:id', {preHandler: [fastify.authenticate] }, async (request, reply) => {
-        const id = request.params.id
+        const id = request.params.id;
         const wrappedBody = {user: request.body};
 
         const res = await fetch(`${usersServiceUrl}/users/${id}`, {
+            method: 'PATCH',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(wrappedBody),
+        });
+        const data = await res.json();
+        return reply.send(data);
+    });
+
+    fastify.patch('/users/personal', {preHandler: [fastify.authenticate] }, async (request, reply) => {
+        const sub = request.user.sub;
+        const wrappedBody = {user: request.body};
+
+        const res = await fetch(`${usersServiceUrl}/users/${sub}`, {
             method: 'PATCH',
             headers: {
                 'Content-Type': 'application/json',
@@ -70,6 +95,17 @@ export default async function usersProxy(fastify: FastifyInstance, opts: Fastify
         const data = await res.json();
         return reply.send(data);
     });
+
+    fastify.delete('/users/personal', { preHandler: [fastify.authenticate] }, async (request, reply) => {
+        const sub = request.user.sub;
+
+        const res = await fetch(`${usersServiceUrl}/users/${sub}`, {
+            method: 'DELETE',
+        });
+        const data = await res.json();
+        return reply.send(data);
+    });
+
 
     fastify.post('/login', async(request, reply) => {
         const res = await fetch(`${usersServiceUrl}/login`, {
@@ -111,24 +147,24 @@ export default async function usersProxy(fastify: FastifyInstance, opts: Fastify
         return reply.send(data);
     });
 
-    fastify.post('/refresh', { preHandler: [fastify.authenticate] }, async(request, reply) => {
-        const res = await fetch(`${usersServiceUrl}/refresh`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'x-user-id': request.user.sub
-            },
-            body: JSON.stringify(request.body),
-        });
+    // fastify.post('/refresh', { preHandler: [fastify.authenticate] }, async(request, reply) => {
+    //     const res = await fetch(`${usersServiceUrl}/refresh`, {
+    //         method: 'POST',
+    //         headers: {
+    //             'Content-Type': 'application/json',
+    //             'x-user-id': request.user.sub
+    //         },
+    //         body: JSON.stringify(request.body),
+    //     });
 
-        const setCookies = res.headers.getSetCookie();
-        if (setCookies) {
-            for (const cookie of setCookies) {
-                reply.header('set-cookie', cookie);
-            }
-        }
+    //     const setCookies = res.headers.getSetCookie();
+    //     if (setCookies) {
+    //         for (const cookie of setCookies) {
+    //             reply.header('set-cookie', cookie);
+    //         }
+    //     }
 
-        const data = await res.json();
-        return reply.send(data)
-    });
+    //     const data = await res.json();
+    //     return reply.send(data)
+    // });
 }
