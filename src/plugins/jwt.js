@@ -63,7 +63,15 @@ export default fp(
                     reply.header('set-cookie', cookie);
                 }
             }
-            request.user = refreshDecoded;
+            const data = await res.json();
+            const newAccessToken = data.access_token;
+
+            if (!newAccessToken) {
+              reply.code(401).send({ error: 'No new access token provided' });
+              return;
+            }
+            const newDecoded = await fastify.jwt.verify(newAccessToken);
+            request.user = newDecoded;
           } catch (refreshErr) {
             if (refreshErr.name === 'TokenExpiredError') {
               reply.code(401).send({ error: 'Refresh token expired' });
