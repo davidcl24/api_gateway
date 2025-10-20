@@ -22,7 +22,7 @@ await fastify.register(async (instance, opts) => {
     instance.register(usersProxy);
     instance.register(contentsProxy);
 });
-fastify.listen({ port: 30000, host: '0.0.0.0' }, err => {
+fastify.listen({ port: 30000 }, err => {
     if (err) {
         fastify.log.error(err);
         process.exit(1);

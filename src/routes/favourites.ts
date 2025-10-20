@@ -109,7 +109,7 @@ export default async function favouritesProxy(fastify: FastifyInstance, opts: Fa
         const sub = request.user.sub;
         const movieId = request.params.id;
 
-        const res = await fetch(`${favsServiceUrl}/user/${sub}/movie/${movieId}`, {
+        const res = await fetch(`${favsServiceUrl}/api/favourites/user/${sub}/movie/${movieId}`, {
             method: 'GET',
         });
         const data = await res.json();
@@ -120,7 +120,7 @@ export default async function favouritesProxy(fastify: FastifyInstance, opts: Fa
         const sub = request.user.sub;
         const showId = request.params.id;
 
-        const res = await fetch(`${favsServiceUrl}/user/${sub}/show/${showId}`, {
+        const res = await fetch(`${favsServiceUrl}/api/favourites/user/${sub}/show/${showId}`, {
             method: 'GET',
         });
         const data = await res.json();

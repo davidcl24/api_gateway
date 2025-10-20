@@ -18,9 +18,7 @@ export default fp(async function jwtPlugin(fastify, opts) {
     fastify.decorate("authenticate", async function (request, reply) {
         try {
             const accessToken = request.cookies.access_token;
-            log('access token: ', accessToken);
             var refreshToken = request.cookies.refresh_token;
-            log('refresh Token: ', refreshToken);
             if (!accessToken && !refreshToken) {
                 reply.code(401).send({ error: 'No tokens provided' });
                 return;
