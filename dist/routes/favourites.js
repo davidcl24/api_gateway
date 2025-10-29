@@ -98,6 +98,23 @@ export default async function favouritesProxy(fastify, opts) {
         const data = await res.json();
         return reply.send(data);
     });
+    fastify.post('/favourites/new', { preHandler: [fastify.authenticate] }, async (request, reply) => {
+        const sub = request.user.sub;
+        const originalBody = request.body;
+        request.body = {
+            ...originalBody,
+            user_id: sub
+        };
+        const res = await fetch(`${favsServiceUrl}/api/favourites`, {
+            method: 'POST',
+            headers: {
+                "Content-Type": 'application/json',
+            },
+            body: JSON.stringify(request.body),
+        });
+        const data = await res.json();
+        return reply.send(data);
+    });
     fastify.register(httpProxy, {
         upstream: favsServiceUrl,
         prefix: '/favourites',
