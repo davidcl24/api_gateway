@@ -147,6 +147,10 @@ export default async function usersProxy(fastify: FastifyInstance, opts: Fastify
         return reply.send(data);
     });
 
+    fastify.post('/token-checker', { preHandler: [fastify.authenticate] }, async(request, reply) => {
+        return reply.send();
+    });
+
     // fastify.post('/refresh', { preHandler: [fastify.authenticate] }, async(request, reply) => {
     //     const res = await fetch(`${usersServiceUrl}/refresh`, {
     //         method: 'POST',
