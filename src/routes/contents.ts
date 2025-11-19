@@ -3,6 +3,7 @@ import  multipart from '@fastify/multipart';
 import fs from 'fs';
 import path from 'path';
 import { Queue } from 'bullmq';
+import { log } from 'console';
 
 export default async function contentsProxy(fastify: FastifyInstance, opts: FastifyPluginOptions) {
     const contentsServiceUrl = process.env.CONTENTS_SERVICE_URL || 'http://localhost:8000/api';
@@ -260,13 +261,26 @@ function registerMovies(fastify: FastifyInstance, contentsServiceUrl: string, qu
         let videoFileName = null;
 
         for await (const part of parts) {
+
             if (part.type === 'file') {
                 videoFileName = part.filename;
                 videoFileBuffer = await part.toBuffer();
-            } else if (part.fieldname != 'url') {
-                metadata[part.fieldname] = part.value;
+            } else if (part.type === 'field' && part.fieldname !== 'url') {
+                const name = part.fieldname;
+
+                if (name.endsWith("[]")) {
+                    const key = name.replace("[]", "");
+
+                    if (!metadata[key]) {
+                        metadata[key] = [];
+                    }
+
+                    metadata[key].push(part.value);
+                } else {
+                    metadata[name] = part.value;
+                }
             }
-        };
+        }
 
         if (!videoFileBuffer || !videoFileName) {
             return reply.code(400).send({ error: 'Missing file' });
@@ -383,13 +397,26 @@ function registerMovies(fastify: FastifyInstance, contentsServiceUrl: string, qu
         let videoFileName = null;
 
         for await (const part of parts) {
+
             if (part.type === 'file') {
                 videoFileName = part.filename;
                 videoFileBuffer = await part.toBuffer();
-            } else if (part.fieldname != 'url') {
-                metadata[part.fieldname] = part.value;
+            } else if (part.type === 'field' && part.fieldname !== 'url') {
+                const name = part.fieldname;
+
+                if (name.endsWith("[]")) {
+                    const key = name.replace("[]", "");
+
+                    if (!metadata[key]) {
+                        metadata[key] = [];
+                    }
+
+                    metadata[key].push(part.value);
+                } else {
+                    metadata[name] = part.value;
+                }
             }
-        };
+        }
 
         if (!videoFileBuffer || !videoFileName) {
             return reply.code(400).send({ error: 'Missing file' });
@@ -451,11 +478,21 @@ function registerShows(fastify: FastifyInstance, contentsServiceUrl: string){
         const metadata: { [key: string]: any } = {};
 
         for await (const part of parts) {
-            if (part.type === 'field' && part.fieldname != 'url') {
-                metadata[part.fieldname] = part.value;
-            }
-        };
+            if (part.type === 'field' && part.fieldname !== 'url') {
 
+                if (part.fieldname.endsWith("[]")) {
+                    const key = part.fieldname.replace("[]", "");
+
+                    if (!metadata[key]) {
+                        metadata[key] = [];
+                    }
+
+                    metadata[key].push(part.value);
+                } else {
+                    metadata[part.fieldname] = part.value;
+                }
+            }
+        }
         const showData = {
             ...metadata,
             seasons_num: metadata.seasons_num ? parseInt(metadata.seasons_num, 10) : null,
@@ -540,11 +577,21 @@ function registerShows(fastify: FastifyInstance, contentsServiceUrl: string){
         const metadata: { [key: string]: any } = {};
 
         for await (const part of parts) {
-            if (part.type === 'field' && part.fieldname != 'url') {
-                metadata[part.fieldname] = part.value;
-            }
-        };
+            if (part.type === 'field' && part.fieldname !== 'url') {
 
+                if (part.fieldname.endsWith("[]")) {
+                    const key = part.fieldname.replace("[]", "");
+
+                    if (!metadata[key]) {
+                        metadata[key] = [];
+                    }
+
+                    metadata[key].push(part.value);
+                } else {
+                    metadata[part.fieldname] = part.value;
+                }
+            }
+        }
         const showData = {
             ...metadata,
             seasons_num: metadata.seasons_num ? parseInt(metadata.seasons_num, 10) : null,

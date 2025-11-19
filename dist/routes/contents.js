@@ -209,11 +209,20 @@ function registerMovies(fastify, contentsServiceUrl, queue) {
                 videoFileName = part.filename;
                 videoFileBuffer = await part.toBuffer();
             }
-            else if (part.fieldname != 'url') {
-                metadata[part.fieldname] = part.value;
+            else if (part.type === 'field' && part.fieldname !== 'url') {
+                const name = part.fieldname;
+                if (name.endsWith("[]")) {
+                    const key = name.replace("[]", "");
+                    if (!metadata[key]) {
+                        metadata[key] = [];
+                    }
+                    metadata[key].push(part.value);
+                }
+                else {
+                    metadata[name] = part.value;
+                }
             }
         }
-        ;
         if (!videoFileBuffer || !videoFileName) {
             return reply.code(400).send({ error: 'Missing file' });
         }
@@ -314,11 +323,20 @@ function registerMovies(fastify, contentsServiceUrl, queue) {
                 videoFileName = part.filename;
                 videoFileBuffer = await part.toBuffer();
             }
-            else if (part.fieldname != 'url') {
-                metadata[part.fieldname] = part.value;
+            else if (part.type === 'field' && part.fieldname !== 'url') {
+                const name = part.fieldname;
+                if (name.endsWith("[]")) {
+                    const key = name.replace("[]", "");
+                    if (!metadata[key]) {
+                        metadata[key] = [];
+                    }
+                    metadata[key].push(part.value);
+                }
+                else {
+                    metadata[name] = part.value;
+                }
             }
         }
-        ;
         if (!videoFileBuffer || !videoFileName) {
             return reply.code(400).send({ error: 'Missing file' });
         }
@@ -366,11 +384,19 @@ function registerShows(fastify, contentsServiceUrl) {
         const parts = request.parts();
         const metadata = {};
         for await (const part of parts) {
-            if (part.type === 'field' && part.fieldname != 'url') {
-                metadata[part.fieldname] = part.value;
+            if (part.type === 'field' && part.fieldname !== 'url') {
+                if (part.fieldname.endsWith("[]")) {
+                    const key = part.fieldname.replace("[]", "");
+                    if (!metadata[key]) {
+                        metadata[key] = [];
+                    }
+                    metadata[key].push(part.value);
+                }
+                else {
+                    metadata[part.fieldname] = part.value;
+                }
             }
         }
-        ;
         const showData = {
             ...metadata,
             seasons_num: metadata.seasons_num ? parseInt(metadata.seasons_num, 10) : null,
@@ -442,11 +468,19 @@ function registerShows(fastify, contentsServiceUrl) {
         const parts = request.parts();
         const metadata = {};
         for await (const part of parts) {
-            if (part.type === 'field' && part.fieldname != 'url') {
-                metadata[part.fieldname] = part.value;
+            if (part.type === 'field' && part.fieldname !== 'url') {
+                if (part.fieldname.endsWith("[]")) {
+                    const key = part.fieldname.replace("[]", "");
+                    if (!metadata[key]) {
+                        metadata[key] = [];
+                    }
+                    metadata[key].push(part.value);
+                }
+                else {
+                    metadata[part.fieldname] = part.value;
+                }
             }
         }
-        ;
         const showData = {
             ...metadata,
             seasons_num: metadata.seasons_num ? parseInt(metadata.seasons_num, 10) : null,
