@@ -300,6 +300,7 @@ function registerMovies(fastify: FastifyInstance, contentsServiceUrl: string, qu
             ...metadata,
             genre_id: metadata.genre_id ? parseInt(metadata.genre_id, 10) : null,
             directors_ids: ([] as string[]).concat(metadata.directors_ids).map(id => parseInt(id, 10)).filter(n => !isNaN(n)),
+            actors_ids: ([] as string[]).concat(metadata.actors_ids).map(id => parseInt(id, 10)).filter(n => !isNaN(n)),
             rating: metadata.rating ? parseFloat(metadata.rating) : null,
             release_date: metadata.release_date ? metadata.release_date : null,
             file_key: fileKey,
@@ -412,6 +413,7 @@ function registerMovies(fastify: FastifyInstance, contentsServiceUrl: string, qu
             ...metadata,
             genre_id: metadata.genre_id ? parseInt(metadata.genre_id, 10) : null,
             directors_ids: ([] as string[]).concat(metadata.directors_ids).map(id => parseInt(id, 10)).filter(n => !isNaN(n)),
+            actors_ids: ([] as string[]).concat(metadata.actors_ids).map(id => parseInt(id, 10)).filter(n => !isNaN(n)),
             rating: metadata.rating ? parseFloat(metadata.rating) : null,
             release_date: metadata.release_date ? metadata.release_date : null,
             file_key: fileKey,
@@ -459,6 +461,7 @@ function registerShows(fastify: FastifyInstance, contentsServiceUrl: string){
             seasons_num: metadata.seasons_num ? parseInt(metadata.seasons_num, 10) : null,
             genre_id: metadata.genre_id ? parseInt(metadata.genre_id, 10) : null,
             directors_ids: ([] as string[]).concat(metadata.directors_ids).map(id => parseInt(id, 10)).filter(n => !isNaN(n)),
+            actors_ids: ([] as string[]).concat(metadata.actors_ids).map(id => parseInt(id, 10)).filter(n => !isNaN(n)),
             rating: metadata.rating ? parseFloat(metadata.rating) : null,
             release_date: metadata.release_date ? metadata.release_date : null
         }
@@ -547,6 +550,7 @@ function registerShows(fastify: FastifyInstance, contentsServiceUrl: string){
             seasons_num: metadata.seasons_num ? parseInt(metadata.seasons_num, 10) : null,
             genre_id: metadata.genre_id ? parseInt(metadata.genre_id, 10) : null,
             directors_ids: ([] as string[]).concat(metadata.directors_ids).map(id => parseInt(id, 10)).filter(n => !isNaN(n)),
+            actors_ids: ([] as string[]).concat(metadata.actors_ids).map(id => parseInt(id, 10)).filter(n => !isNaN(n)),
             rating: metadata.rating ? parseFloat(metadata.rating) : null,
             release_date: metadata.release_date ? metadata.release_date : null
         }
