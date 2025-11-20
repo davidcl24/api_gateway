@@ -33,7 +33,7 @@ RUN npm install --only=production
 COPY --from=build /app/dist ./dist
 
 # Exponer el puerto del API Gateway
-EXPOSE 3000
+EXPOSE 30000
 
 # Comando final (ajusta si usas tsx u otro)
 CMD ["node", "dist/main.js"]
