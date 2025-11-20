@@ -40,7 +40,10 @@ export default fp(
 
         request.user = decoded;
       } catch (err) {
-        if (err.message === 'Access token missing or invalid') {
+        if (err.name === 'TokenExpiredError' || 
+            err.name === 'JsonWebTokenError' ||
+            err.code === 'FAST_JWT_MALFORMED' ||
+            err.message === 'Access token missing or invalid') {
           if (!refreshToken) {
             reply.code(401).send({ error: 'Refresh token missing' });
             return;
