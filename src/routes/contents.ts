@@ -417,24 +417,28 @@ function registerMovies(fastify: FastifyInstance, contentsServiceUrl: string, qu
                 }
             }
         }
+        let fileKey: string | null = null;
+        if (videoFileBuffer && videoFileName) {
+            fileKey = `${Date.now()}_${videoFileName}`;
+            const dirPath = path.join('/uploads/raw/movies');
+            const filePath = path.join(dirPath, fileKey)
 
-        if (!videoFileBuffer || !videoFileName) {
-            return reply.code(400).send({ error: 'Missing file' });
+            await fs.promises.mkdir(dirPath, { recursive: true });
+            await fs.promises.writeFile(filePath, videoFileBuffer);
+
+            await queue.add('ffmpeg-conversion', {
+                'input_path': filePath,
+                'output_folder': `/uploads/hls/movies/${fileKey}`,
+                'resolutions': [1080, 720, 480],
+                'file_key': fileKey
+            },
+            {
+                removeOnComplete: true,
+                removeOnFail: false,
+            });
         }
         
-        const fileKey = `${Date.now()}_${videoFileName}`;
-        const dirPath = path.join('/uploads/raw/movies');
-        const filePath = path.join(dirPath, fileKey)
-
-        await fs.promises.mkdir(dirPath, { recursive: true });
-        await fs.promises.writeFile(filePath, videoFileBuffer);
-
-        await queue.add('ffmpeg-conversion', {
-            'input_path': filePath,
-            'output_folder': `/uploads/hls/movies/${fileKey}`,
-            'resolutions': [1080, 720, 480],
-            'file_key': fileKey
-        });
+        
 
         const movieData = {
             ...metadata,
@@ -443,7 +447,7 @@ function registerMovies(fastify: FastifyInstance, contentsServiceUrl: string, qu
             actors_ids: ([] as string[]).concat(metadata.actors_ids).map(id => parseInt(id, 10)).filter(n => !isNaN(n)),
             rating: metadata.rating ? parseFloat(metadata.rating) : null,
             release_date: metadata.release_date ? metadata.release_date : null,
-            file_key: fileKey,
+            file_key: fileKey ?? null,
         }
 
         const res = await fetch(`${contentsServiceUrl}/movies/${id}`, {
@@ -663,6 +667,10 @@ function registerEpisodes(fastify: FastifyInstance, contentsServiceUrl: string, 
             'output_folder': `/uploads/hls/shows/${metadata['show_id']}/${metadata['season_num']}/${fileKey}`,
             'resolutions': [1080, 720, 480],
             'file_key': fileKey
+        },
+        {
+            removeOnComplete: true,
+            removeOnFail: false,
         });
 
         const episodeData = {
@@ -732,30 +740,33 @@ function registerEpisodes(fastify: FastifyInstance, contentsServiceUrl: string, 
             }
         }
 
-        if (!videoFileBuffer || !videoFileName) {
-            return reply.code(400).send({ error: 'Missing file' });
+        let fileKey: string | null = null;
+        if (videoFileBuffer && videoFileName) {
+            fileKey = `${Date.now()}_${videoFileName}`;
+            const dirPath = path.join(`/uploads/raw/shows/${metadata['show_id']}/${metadata['season_num']}`);
+            const filePath = path.join(dirPath, fileKey);
+
+            await fs.promises.mkdir(dirPath, { recursive: true });
+            await fs.promises.writeFile(filePath, videoFileBuffer);
+
+            await queue.add('ffmpeg-conversion', {
+                'input_path': filePath,
+                'output_folder': `/uploads/hls/shows/${metadata['show_id']}/${metadata['season_num']}/${fileKey}`,
+                'resolutions': [1080, 720, 480],
+                'file_key': fileKey
+            },
+            {
+                removeOnComplete: true,
+                removeOnFail: false,
+            });
         }
-        
-        const fileKey = `${Date.now()}_${videoFileName}`;
-        const dirPath = path.join(`/uploads/raw/shows/${metadata['show_id']}/${metadata['season_num']}`);
-        const filePath = path.join(dirPath, fileKey);
-
-        await fs.promises.mkdir(dirPath, { recursive: true });
-        await fs.promises.writeFile(filePath, videoFileBuffer);
-
-        await queue.add('ffmpeg-conversion', {
-            'input_path': filePath,
-            'output_folder': `/uploads/hls/shows/${metadata['show_id']}/${metadata['season_num']}/${fileKey}`,
-            'resolutions': [1080, 720, 480],
-            'file_key': fileKey
-        });
 
         const episodeData = {
             ...metadata,
             season_num: metadata.season_num ? parseInt(metadata.season_num, 10) : null,
             episode_num: metadata.episode_num ? parseInt(metadata.episode_num, 10) : null,
             release_date: metadata.release_date ? metadata.release_date : null,
-            file_key: fileKey,
+            file_key: fileKey ?? null,
         }
 
         const res = await fetch(`${contentsServiceUrl}/episodes/${id}`, {
