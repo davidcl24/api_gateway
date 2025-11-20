@@ -1,5 +1,6 @@
 import Fastify from 'fastify';
 import jwtPlugin from './plugins/jwt.js';
+import adminPlugin from './plugins/adminAuthenticator.js';
 import favouritesProxy from './routes/favourites.js';
 import historyProxy from './routes/history.js';
 import usersProxy from './routes/users.js';
@@ -9,6 +10,7 @@ import cors from '@fastify/cors';
 const fastify = Fastify({ logger: true });
 
 await fastify.register(jwtPlugin);
+await fastify.register(adminPlugin)
 
 await fastify.register(cors, {
   origin: true, 

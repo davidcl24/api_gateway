@@ -52,7 +52,7 @@ function registerActors(fastify: FastifyInstance, contentsServiceUrl: string) {
         return reply.send(data);
     });
 
-    fastify.post('/actors', { preHandler: [fastify.authenticate] }, async (request, reply) => {
+    fastify.post('/actors', { preHandler: [fastify.authenticate, fastify.requireAdmin] }, async (request, reply) => {
         const res = await fetch(`${contentsServiceUrl}/actors`, {
             method: 'POST',
             headers: {
@@ -84,7 +84,7 @@ function registerActors(fastify: FastifyInstance, contentsServiceUrl: string) {
         return reply.send(data);
     });
 
-    fastify.patch<{ Params: Params }>('/actors/:id', { preHandler: [fastify.authenticate] }, async (request, reply) => {
+    fastify.patch<{ Params: Params }>('/actors/:id', { preHandler: [fastify.authenticate, fastify.requireAdmin] }, async (request, reply) => {
         const id = request.params.id;
 
         const res = await fetch(`${contentsServiceUrl}/actors/${id}`, {
@@ -98,7 +98,7 @@ function registerActors(fastify: FastifyInstance, contentsServiceUrl: string) {
         return reply.send(data);
     });
 
-    fastify.delete<{ Params: Params }>('/actors/:id', { preHandler: [fastify.authenticate] }, async (request, reply) => {
+    fastify.delete<{ Params: Params }>('/actors/:id', { preHandler: [fastify.authenticate, fastify.requireAdmin] }, async (request, reply) => {
         const id = request.params.id;
 
         const res = await fetch(`${contentsServiceUrl}/actors/${id}`, {
@@ -132,7 +132,7 @@ function registerDirectors(fastify: FastifyInstance, contentsServiceUrl: string)
         return reply.send(data);
     });
 
-    fastify.post('/directors', { preHandler: [fastify.authenticate] }, async (request, reply) => {
+    fastify.post('/directors', { preHandler: [fastify.authenticate, fastify.requireAdmin] }, async (request, reply) => {
         const res = await fetch(`${contentsServiceUrl}/directors`, {
             method: 'POST',
             headers: {
@@ -164,7 +164,7 @@ function registerDirectors(fastify: FastifyInstance, contentsServiceUrl: string)
         return reply.send(data);
     });
 
-    fastify.patch<{ Params: Params }>('/directors/:id', { preHandler: [fastify.authenticate] }, async (request, reply) => {
+    fastify.patch<{ Params: Params }>('/directors/:id', { preHandler: [fastify.authenticate, fastify.requireAdmin] }, async (request, reply) => {
         const id = request.params.id;
 
         const res = await fetch(`${contentsServiceUrl}/directors/${id}`, {
@@ -178,7 +178,7 @@ function registerDirectors(fastify: FastifyInstance, contentsServiceUrl: string)
         return reply.send(data);
     });
 
-    fastify.delete<{ Params: Params }>('/directors/:id', { preHandler: [fastify.authenticate] }, async (request, reply) => {
+    fastify.delete<{ Params: Params }>('/directors/:id', { preHandler: [fastify.authenticate, fastify.requireAdmin] }, async (request, reply) => {
         const id = request.params.id;
 
         const res = await fetch(`${contentsServiceUrl}/directors/${id}`, {
@@ -212,7 +212,7 @@ function registerGenres(fastify: FastifyInstance, contentsServiceUrl: string) {
         return reply.send(data);
     });
 
-    fastify.post('/genres', { preHandler: [fastify.authenticate] }, async (request, reply) => {
+    fastify.post('/genres', { preHandler: [fastify.authenticate, fastify.requireAdmin] }, async (request, reply) => {
         const res = await fetch(`${contentsServiceUrl}/genres`, {
             method: 'POST',
             headers: {
@@ -224,7 +224,7 @@ function registerGenres(fastify: FastifyInstance, contentsServiceUrl: string) {
         return reply.send(data);
     });
 
-    fastify.patch<{ Params: Params }>('/genres/:id', { preHandler: [fastify.authenticate] }, async (request, reply) => {
+    fastify.patch<{ Params: Params }>('/genres/:id', { preHandler: [fastify.authenticate, fastify.requireAdmin] }, async (request, reply) => {
         const id = request.params.id;
 
         const res = await fetch(`${contentsServiceUrl}/genres/${id}`, {
@@ -238,7 +238,7 @@ function registerGenres(fastify: FastifyInstance, contentsServiceUrl: string) {
         return reply.send(data);
     });
 
-    fastify.delete<{ Params: Params }>('/genres/:id', { preHandler: [fastify.authenticate] }, async (request, reply) => {
+    fastify.delete<{ Params: Params }>('/genres/:id', { preHandler: [fastify.authenticate, fastify.requireAdmin] }, async (request, reply) => {
         const id = request.params.id;
 
         const res = await fetch(`${contentsServiceUrl}/genres/${id}`, {
@@ -254,7 +254,7 @@ function registerMovies(fastify: FastifyInstance, contentsServiceUrl: string, qu
         id: string
     }
 
-    fastify.post('/movies', { preHandler: [fastify.authenticate] }, async (request, reply) => {
+    fastify.post('/movies', { preHandler: [fastify.authenticate, fastify.requireAdmin] }, async (request, reply) => {
         const parts = request.parts();
         const metadata: { [key: string]: any } = {};
         let videoFileBuffer = null;
@@ -389,7 +389,7 @@ function registerMovies(fastify: FastifyInstance, contentsServiceUrl: string, qu
         return reply.send(data);
     });
     
-    fastify.patch<{ Params: Params }>('/movies/:id', { preHandler: [fastify.authenticate] }, async (request, reply) => {
+    fastify.patch<{ Params: Params }>('/movies/:id', { preHandler: [fastify.authenticate, fastify.requireAdmin] }, async (request, reply) => {
         const id = request.params.id;
         const parts = request.parts();
         const metadata: { [key: string]: any } = {};
@@ -457,7 +457,7 @@ function registerMovies(fastify: FastifyInstance, contentsServiceUrl: string, qu
         return reply.send(data);
     });
 
-    fastify.delete<{ Params: Params }>('/movies/:id', { preHandler: [fastify.authenticate] }, async (request, reply) => {
+    fastify.delete<{ Params: Params }>('/movies/:id', { preHandler: [fastify.authenticate, fastify.requireAdmin] }, async (request, reply) => {
         const id = request.params.id;
 
         const res = await fetch(`${contentsServiceUrl}/movies/${id}`, {
@@ -473,7 +473,7 @@ function registerShows(fastify: FastifyInstance, contentsServiceUrl: string){
         id: string
     }
 
-    fastify.post('/shows', { preHandler: [fastify.authenticate] }, async (request, reply) => {
+    fastify.post('/shows', { preHandler: [fastify.authenticate, fastify.requireAdmin] }, async (request, reply) => {
         const parts = request.parts();
         const metadata: { [key: string]: any } = {};
 
@@ -571,7 +571,7 @@ function registerShows(fastify: FastifyInstance, contentsServiceUrl: string){
         return reply.send(data);
     });
 
-    fastify.patch<{ Params: Params }>('/shows/:id', { preHandler: [fastify.authenticate] }, async (request, reply) => {
+    fastify.patch<{ Params: Params }>('/shows/:id', { preHandler: [fastify.authenticate, fastify.requireAdmin] }, async (request, reply) => {
         const id = request.params.id;
         const parts = request.parts();
         const metadata: { [key: string]: any } = {};
@@ -615,7 +615,7 @@ function registerShows(fastify: FastifyInstance, contentsServiceUrl: string){
         return reply.send(data);
     });
 
-    fastify.delete<{ Params: Params }>('/shows/:id', async (request, reply) => {
+    fastify.delete<{ Params: Params }>('/shows/:id', { preHandler: [fastify.authenticate, fastify.requireAdmin] }, async (request, reply) => {
         const id = request.params.id;
 
         const res = await fetch(`${contentsServiceUrl}/shows/${id}`, {
@@ -631,7 +631,7 @@ function registerEpisodes(fastify: FastifyInstance, contentsServiceUrl: string, 
         id: string,
         seasonNum: string
     }
-    fastify.post('/episodes', { preHandler: [fastify.authenticate] }, async (request, reply) => {
+    fastify.post('/episodes', { preHandler: [fastify.authenticate, fastify.requireAdmin] }, async (request, reply) => {
         const parts = request.parts();
         const metadata: { [key: string]: any } = {};
         let videoFileBuffer = null;
@@ -715,7 +715,7 @@ function registerEpisodes(fastify: FastifyInstance, contentsServiceUrl: string, 
         return reply.send(data);
     });
 
-    fastify.patch<{ Params: Params }>('/episodes/:id', { preHandler: [fastify.authenticate] }, async (request, reply) => {
+    fastify.patch<{ Params: Params }>('/episodes/:id', { preHandler: [fastify.authenticate, fastify.requireAdmin] }, async (request, reply) => {
         const id = request.params.id;
         const parts = request.parts();
         const metadata: { [key: string]: any } = {};
@@ -769,7 +769,7 @@ function registerEpisodes(fastify: FastifyInstance, contentsServiceUrl: string, 
         return reply.send(data);
     });
 
-    fastify.delete<{ Params: Params }>('/episodes/:id', { preHandler: [fastify.authenticate] }, async (request, reply) => {
+    fastify.delete<{ Params: Params }>('/episodes/:id', { preHandler: [fastify.authenticate, fastify.requireAdmin] }, async (request, reply) => {
         const id = request.params.id;
 
         const res = await fetch(`${contentsServiceUrl}/episodes/${id}`, {
