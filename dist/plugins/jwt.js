@@ -4,6 +4,7 @@ import fp from 'fastify-plugin';
 import { log } from 'console';
 export default fp(async function jwtPlugin(fastify, opts) {
     const secret = process.env.SECRET_KEY || 'dev_key';
+    const usersServiceUrl = process.env.USERS_SERVICE_URL || 'http://localhost:4000/api';
     fastify.register(fastifyJwt, {
         secret: secret,
         sign: { algorithm: 'HS256' },
@@ -43,7 +44,7 @@ export default fp(async function jwtPlugin(fastify, opts) {
                 }
                 try {
                     const refreshDecoded = await fastify.jwt.verify(refreshToken);
-                    const res = await fetch(`http://localhost:4000/api/refresh`, {
+                    const res = await fetch(`${usersServiceUrl}/refresh`, {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
