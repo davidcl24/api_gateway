@@ -35,5 +35,5 @@ COPY --from=build /app/dist ./dist
 # Exponer el puerto del API Gateway
 EXPOSE 30000
 
-# Comando final (ajusta si usas tsx u otro)
-CMD ["node", "dist/main.js"]
+# Comando final 
+CMD ["node", "dist/gateway.js"]
