@@ -1,8 +1,19 @@
+/**
+ * @module plugins/jwt
+ */
 import fastifyJwt from '@fastify/jwt';
 import fastifyCookie from '@fastify/cookie';
 import fp from 'fastify-plugin';
 import { log } from 'console';
-export default fp(async function jwtPlugin(fastify, opts) {
+export default fp(
+/**
+ * @function jwtPlugin
+ * @memberof module:plugins/jwt
+ * @summary Verifies if the JWTs that came in the cookies of the request are valid. If the access token is valid, it allows the request. If it is not, but the refresh token is valid, it allows the request and calls the user microservice that generates a new token pair. If neither is valid, it doesn't allow the request.
+ * @param fastify The fastify instance.
+ * @param opts The options for the fastify plugin
+ */
+async function jwtPlugin(fastify, opts) {
     const secret = process.env.SECRET_KEY || 'dev_key';
     const usersServiceUrl = process.env.USERS_SERVICE_URL || 'http://localhost:4000/api';
     fastify.register(fastifyJwt, {

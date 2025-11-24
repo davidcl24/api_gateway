@@ -1,6 +1,22 @@
+/**
+ * @module routes/history
+ */
 import httpProxy from '@fastify/http-proxy';
+/**
+ * @function historyProxy
+ * @memberof module:routes/history
+ * @summary It proxies the requests that come from the client to the history microservice
+ * @param fastify The fastify instance
+ * @param opts The options for the fastify plugin
+ */
 export default async function historyProxy(fastify, opts) {
     const historyServiceUrl = process.env.HISTORY_SERVICE_URL || 'http://localhost:7500';
+    /**
+     * @name GET /history/user/personal
+     * @function
+     * @memberof module:routes/history
+     * @summary It retrieves from the microservice every element from the history of the user who made the request
+     */
     fastify.get('/history/user/personal', { preHandler: [fastify.authenticate] }, async (request, reply) => {
         const sub = request.user.sub;
         const res = await fetch(`${historyServiceUrl}/api/history/user/${sub}`, {
@@ -9,6 +25,12 @@ export default async function historyProxy(fastify, opts) {
         const data = await res.json();
         return reply.send(data);
     });
+    /**
+     * @name GET /history/user/personal/movie/:id
+     * @function
+     * @memberof module:routes/history
+     * @summary It retrieves from the microservice a history element from the history of the user who made the request by a specific movie
+     */
     fastify.get('/history/user/personal/movie/:id', { preHandler: [fastify.authenticate] }, async (request, reply) => {
         const sub = request.user.sub;
         const movieId = request.params.id;
@@ -18,6 +40,12 @@ export default async function historyProxy(fastify, opts) {
         const data = await res.json();
         return reply.send(data);
     });
+    /**
+     * @name GET /history/user/personal/episode/:id
+     * @function
+     * @memberof module:routes/history
+     * @summary It retrieves from the microservice a history element from the history of the user who made the request by a specific episode
+     */
     fastify.get('/history/user/personal/episode/:id', { preHandler: [fastify.authenticate] }, async (request, reply) => {
         const sub = request.user.sub;
         const showId = request.params.id;
@@ -27,6 +55,12 @@ export default async function historyProxy(fastify, opts) {
         const data = await res.json();
         return reply.send(data);
     });
+    /**
+     * @name POST /history/new
+     * @function
+     * @memberof module:routes/history
+     * @summary It calls the microservice to create a new history element for the user who made the request
+     */
     fastify.post('/history/new', { preHandler: [fastify.authenticate] }, async (request, reply) => {
         const sub = request.user.sub;
         const originalBody = request.body;
@@ -44,6 +78,12 @@ export default async function historyProxy(fastify, opts) {
         const data = await res.json();
         return reply.send(data);
     });
+    /**
+     * @name register
+     * @function
+     * @memberof module:routes/history
+     * It proxies the rest of the routes
+     */
     fastify.register(httpProxy, {
         upstream: historyServiceUrl,
         prefix: '/history',

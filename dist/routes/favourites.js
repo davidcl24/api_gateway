@@ -1,7 +1,23 @@
+/**
+ * @module routes/favourites
+ */
 import httpProxy from '@fastify/http-proxy';
+/**
+ * @function favouritesProxy
+ * @memberof module:routes/favourites
+ * @summary It proxies the requests that come from the client to the favourites microservice
+ * @param fastify The fastify instance
+ * @param opts The options for the fastify plugin
+ */
 export default async function favouritesProxy(fastify, opts) {
     const favsServiceUrl = process.env.FAVOURITES_SERVICE_URL || 'http://localhost:7600';
     const contentsServiceUrl = process.env.CONTENTS_SERVICE_URL || 'http://localhost:8000/api';
+    /**
+     * @name GET /favourites/user/:id
+     * @function
+     * @memberof module:routes/favourites
+     * @summary It retrieves from the microservice every favourite movie and show a specific user has added
+     */
     fastify.get('/favourites/user/:id', async (request, reply) => {
         const id = request.params.id;
         const res = await fetch(`${favsServiceUrl}/api/favourites/user/${id}`, {
@@ -41,6 +57,12 @@ export default async function favouritesProxy(fastify, opts) {
             shows: showData,
         });
     });
+    /**
+     * @name GET /favourites/user/personal
+     * @function
+     * @memberof module:routes/favourites
+     * @summary It retrieves from the microservice every favourite movie and show a the user who made the request has added
+     */
     fastify.get('/favourites/user/personal', { preHandler: [fastify.authenticate] }, async (request, reply) => {
         const sub = request.user.sub;
         const res = await fetch(`${favsServiceUrl}/api/favourites/user/${sub}`, {
@@ -80,6 +102,12 @@ export default async function favouritesProxy(fastify, opts) {
             shows: showData,
         });
     });
+    /**
+     * @name GET /favourites/user/personal/movie/:id
+     * @function
+     * @memberof module:routes/favourites
+     * @summary It retrieves from the microservice a favourite element the user that made the request has added from a specific movie
+     */
     fastify.get('/favourites/user/personal/movie/:id', { preHandler: [fastify.authenticate] }, async (request, reply) => {
         const sub = request.user.sub;
         const movieId = request.params.id;
@@ -89,6 +117,12 @@ export default async function favouritesProxy(fastify, opts) {
         const data = await res.json();
         return reply.send(data);
     });
+    /**
+     * @name GET /favourites/user/personal/show/:id
+     * @function
+     * @memberof module:routes/favourites
+     * @summary It retrieves from the microservice a favourite element the user that made the request has added from a specific show
+     */
     fastify.get('/favourites/user/personal/show/:id', { preHandler: [fastify.authenticate] }, async (request, reply) => {
         const sub = request.user.sub;
         const showId = request.params.id;
@@ -98,6 +132,12 @@ export default async function favouritesProxy(fastify, opts) {
         const data = await res.json();
         return reply.send(data);
     });
+    /**
+     * @name GET /favourites/new
+     * @function
+     * @memberof module:routes/favourites
+     * @summary It calls the microservice to create a new favourite element for the user who made the request
+     */
     fastify.post('/favourites/new', { preHandler: [fastify.authenticate] }, async (request, reply) => {
         const sub = request.user.sub;
         const originalBody = request.body;
@@ -115,6 +155,12 @@ export default async function favouritesProxy(fastify, opts) {
         const data = await res.json();
         return reply.send(data);
     });
+    /**
+     * @name register
+     * @function
+     * @memberof module:routes/favourites
+     * @summary It proxies the rest of the routes
+     */
     fastify.register(httpProxy, {
         upstream: favsServiceUrl,
         prefix: '/favourites',

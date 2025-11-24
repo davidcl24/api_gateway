@@ -1,7 +1,17 @@
+/**
+ * @module routes/contents
+ */
 import multipart from '@fastify/multipart';
 import fs from 'fs';
 import path from 'path';
 import { Queue } from 'bullmq';
+/**
+ * @function contentsProxy
+ * @memberof module:routes/contents
+ * @summary It proxies the requests that come from the client to the contents microservice
+ * @param fastify The fastify instance
+ * @param opts The options for the fastify plugin
+ */
 export default async function contentsProxy(fastify, opts) {
     const contentsServiceUrl = process.env.CONTENTS_SERVICE_URL || 'http://localhost:8000/api';
     const queue = new Queue('video-queue', {
@@ -22,7 +32,18 @@ export default async function contentsProxy(fastify, opts) {
     registerShows(fastify, contentsServiceUrl);
     registerEpisodes(fastify, contentsServiceUrl, queue);
 }
+/**
+ * It register the specific routes for actors
+ * @param fastify The fastify instance
+ * @param contentsServiceUrl The URL for the contents microservice
+ */
 function registerActors(fastify, contentsServiceUrl) {
+    /**
+     * @name GET /actors
+     * @function
+     * @memberof module:routes/contents
+     * @summary It retrieves from the microservice every existing actor
+     */
     fastify.get('/actors', { preHandler: [fastify.authenticate] }, async (request, reply) => {
         const res = await fetch(`${contentsServiceUrl}/actors`, {
             method: 'GET',
@@ -30,6 +51,12 @@ function registerActors(fastify, contentsServiceUrl) {
         const data = await res.json();
         return reply.send(data);
     });
+    /**
+     * @name GET /actors/:iud
+     * @function
+     * @memberof module:routes/contents
+     * @summary It retrieves from the micorservvice a specfic actor
+     */
     fastify.get('/actors/:id', { preHandler: [fastify.authenticate] }, async (request, reply) => {
         const id = request.params.id;
         const res = await fetch(`${contentsServiceUrl}/actors/${id}`, {
@@ -38,6 +65,12 @@ function registerActors(fastify, contentsServiceUrl) {
         const data = await res.json();
         return reply.send(data);
     });
+    /**
+     * @name POST /actors
+     * @function
+     * @memberof module:routes/contents
+     * @summary It calls the microservice to create a new actor
+     */
     fastify.post('/actors', { preHandler: [fastify.authenticate, fastify.requireAdmin] }, async (request, reply) => {
         const res = await fetch(`${contentsServiceUrl}/actors`, {
             method: 'POST',
@@ -49,6 +82,12 @@ function registerActors(fastify, contentsServiceUrl) {
         const data = await res.json();
         return reply.send(data);
     });
+    /**
+     * @name GET /movies/:id/actors
+     * @function
+     * @memberof module:routes/contents
+     * @summary It retrieves from the microservice every actor in a movie
+     */
     fastify.get('/movies/:id/actors', { preHandler: [fastify.authenticate] }, async (request, reply) => {
         const id = request.params.id;
         const res = await fetch(`${contentsServiceUrl}/movies/${id}/actors`, {
@@ -57,6 +96,12 @@ function registerActors(fastify, contentsServiceUrl) {
         const data = await res.json();
         return reply.send(data);
     });
+    /**
+     * @name GET /shows/:id/actors
+     * @function
+     * @memberof module:routes/contents
+     * @summary It retrieves from the microservice every actor in a show
+     */
     fastify.get('/shows/:id/actors', { preHandler: [fastify.authenticate] }, async (request, reply) => {
         const id = request.params.id;
         const res = await fetch(`${contentsServiceUrl}/shows/${id}/actors`, {
@@ -65,6 +110,12 @@ function registerActors(fastify, contentsServiceUrl) {
         const data = await res.json();
         return reply.send(data);
     });
+    /**
+     * @name PATCH /actors/:ud
+     * @function
+     * @memberof module:routes/contents
+     * @summary It calls the microservice to update an existing actor
+     */
     fastify.patch('/actors/:id', { preHandler: [fastify.authenticate, fastify.requireAdmin] }, async (request, reply) => {
         const id = request.params.id;
         const res = await fetch(`${contentsServiceUrl}/actors/${id}`, {
@@ -77,6 +128,12 @@ function registerActors(fastify, contentsServiceUrl) {
         const data = await res.json();
         return reply.send(data);
     });
+    /**
+     * @name DELETE /actors/:id
+     * @function
+     * @memberof module:routes/contents
+     * @summary It calls the microservice to delete an existing microservice
+     */
     fastify.delete('/actors/:id', { preHandler: [fastify.authenticate, fastify.requireAdmin] }, async (request, reply) => {
         const id = request.params.id;
         const res = await fetch(`${contentsServiceUrl}/actors/${id}`, {
@@ -86,7 +143,18 @@ function registerActors(fastify, contentsServiceUrl) {
         return reply.send(data);
     });
 }
+/**
+ * It register the specific routes for directors
+ * @param fastify The fastify instance
+ * @param contentsServiceUrl The URL for the contents microservice
+ */
 function registerDirectors(fastify, contentsServiceUrl) {
+    /**
+     * @name GET /directors
+     * @function
+     * @memberof module:routes/contents
+     * @summary It retrieves from the microservice every existing director
+     */
     fastify.get('/directors', { preHandler: [fastify.authenticate] }, async (request, reply) => {
         const res = await fetch(`${contentsServiceUrl}/directors`, {
             method: 'GET',
@@ -94,6 +162,12 @@ function registerDirectors(fastify, contentsServiceUrl) {
         const data = await res.json();
         return reply.send(data);
     });
+    /**
+     * @name GET /directors/:id
+     * @function
+     * @memberof module:routes/contents
+     * @summary It retrieves from the microservice a specific director
+     */
     fastify.get('/directors/:id', { preHandler: [fastify.authenticate] }, async (request, reply) => {
         const id = request.params.id;
         const res = await fetch(`${contentsServiceUrl}/directors/${id}`, {
@@ -102,6 +176,12 @@ function registerDirectors(fastify, contentsServiceUrl) {
         const data = await res.json();
         return reply.send(data);
     });
+    /**
+     * @name POST /directors
+     * @function
+     * @memberof module:routes/contents
+     * @summary It calls the microservice to create a new director
+     */
     fastify.post('/directors', { preHandler: [fastify.authenticate, fastify.requireAdmin] }, async (request, reply) => {
         const res = await fetch(`${contentsServiceUrl}/directors`, {
             method: 'POST',
@@ -113,6 +193,12 @@ function registerDirectors(fastify, contentsServiceUrl) {
         const data = await res.json();
         return reply.send(data);
     });
+    /**
+     * @name GET /movies/:id/directors
+     * @function
+     * @memberof module:routes/contents
+     * @summary It retrieves from the microservice every director in a movie
+     */
     fastify.get('/movies/:id/directors', { preHandler: [fastify.authenticate] }, async (request, reply) => {
         const id = request.params.id;
         const res = await fetch(`${contentsServiceUrl}/movies/${id}/directors`, {
@@ -121,6 +207,12 @@ function registerDirectors(fastify, contentsServiceUrl) {
         const data = await res.json();
         return reply.send(data);
     });
+    /**
+     * @name GET /shows/:id/directors
+     * @function
+     * @memberof module:routes/contents
+     * @summary It retrieves from the microservice every director in a show
+     */
     fastify.get('/shows/:id/directors', { preHandler: [fastify.authenticate] }, async (request, reply) => {
         const id = request.params.id;
         const res = await fetch(`${contentsServiceUrl}/shows/${id}/directors`, {
@@ -129,6 +221,12 @@ function registerDirectors(fastify, contentsServiceUrl) {
         const data = await res.json();
         return reply.send(data);
     });
+    /**
+     * @name PATCH /directors/:id
+     * @function
+     * @memberof module:routes/contents
+     * @summary It calls the microservice to update an existing director
+     */
     fastify.patch('/directors/:id', { preHandler: [fastify.authenticate, fastify.requireAdmin] }, async (request, reply) => {
         const id = request.params.id;
         const res = await fetch(`${contentsServiceUrl}/directors/${id}`, {
@@ -141,6 +239,12 @@ function registerDirectors(fastify, contentsServiceUrl) {
         const data = await res.json();
         return reply.send(data);
     });
+    /**
+     * @name DELETE /directors/:id
+     * @function
+     * @memberof module:routes/contents
+     * @summary It calls the microservice to delete an existing director
+     */
     fastify.delete('/directors/:id', { preHandler: [fastify.authenticate, fastify.requireAdmin] }, async (request, reply) => {
         const id = request.params.id;
         const res = await fetch(`${contentsServiceUrl}/directors/${id}`, {
@@ -150,7 +254,18 @@ function registerDirectors(fastify, contentsServiceUrl) {
         return reply.send(data);
     });
 }
+/**
+ * It register the specific routes for genres
+ * @param fastify The fastify instance
+ * @param contentsServiceUrl The URL for the contents microservice
+ */
 function registerGenres(fastify, contentsServiceUrl) {
+    /**
+     * @name GET /genres
+     * @function
+     * @memberof module:routes/contents
+     * @summary It retrieves from the microservice every existing genre
+     */
     fastify.get('/genres', { preHandler: [fastify.authenticate] }, async (request, reply) => {
         const res = await fetch(`${contentsServiceUrl}/genres`, {
             method: 'GET',
@@ -158,6 +273,12 @@ function registerGenres(fastify, contentsServiceUrl) {
         const data = await res.json();
         return reply.send(data);
     });
+    /**
+     * @name GET /genres/:id
+     * @function
+     * @memberof module:routes/contents
+     * @summary It retrieves from the microservice a specific genre
+     */
     fastify.get('/genres/:id', { preHandler: [fastify.authenticate] }, async (request, reply) => {
         const id = request.params.id;
         const res = await fetch(`${contentsServiceUrl}/genres/${id}`, {
@@ -166,6 +287,12 @@ function registerGenres(fastify, contentsServiceUrl) {
         const data = await res.json();
         return reply.send(data);
     });
+    /**
+     * @name POST /genres
+     * @function
+     * @memberof module:routes/contents
+     * @summary It calls the microservice to create a new genre
+     */
     fastify.post('/genres', { preHandler: [fastify.authenticate, fastify.requireAdmin] }, async (request, reply) => {
         const res = await fetch(`${contentsServiceUrl}/genres`, {
             method: 'POST',
@@ -177,6 +304,12 @@ function registerGenres(fastify, contentsServiceUrl) {
         const data = await res.json();
         return reply.send(data);
     });
+    /**
+     * @name PATCH /genres/:id
+     * @function
+     * @memberof module:routes/contents
+     * @summary It calls the microservice to update an existing genre
+     */
     fastify.patch('/genres/:id', { preHandler: [fastify.authenticate, fastify.requireAdmin] }, async (request, reply) => {
         const id = request.params.id;
         const res = await fetch(`${contentsServiceUrl}/genres/${id}`, {
@@ -189,6 +322,12 @@ function registerGenres(fastify, contentsServiceUrl) {
         const data = await res.json();
         return reply.send(data);
     });
+    /**
+     * @name DELETE /genres/:id
+     * @function
+     * @memberof module:routes/contents
+     * @summary It calls the microservice to delete an existing genre
+     */
     fastify.delete('/genres/:id', { preHandler: [fastify.authenticate, fastify.requireAdmin] }, async (request, reply) => {
         const id = request.params.id;
         const res = await fetch(`${contentsServiceUrl}/genres/${id}`, {
@@ -198,7 +337,18 @@ function registerGenres(fastify, contentsServiceUrl) {
         return reply.send(data);
     });
 }
+/**
+ * It register the specific routes for movies
+ * @param fastify The fastify instance
+ * @param contentsServiceUrl The URL for the contents microservice
+ */
 function registerMovies(fastify, contentsServiceUrl, queue) {
+    /**
+     * @name POST /movies
+     * @function
+     * @memberof module:routes/contents
+     * @summary It calls the microservice to create a new movie after saving the file and creating a work in a Redis queue so another program transcodes it.
+     */
     fastify.post('/movies', { preHandler: [fastify.authenticate, fastify.requireAdmin] }, async (request, reply) => {
         const parts = request.parts();
         const metadata = {};
@@ -265,6 +415,12 @@ function registerMovies(fastify, contentsServiceUrl, queue) {
         const data = await res.json();
         return reply.send(data);
     });
+    /**
+     * @name GET /movies
+     * @function
+     * @memberof module:routes/contents
+     * @summary It retrieves from the microservice every existing movie
+     */
     fastify.get('/movies', { preHandler: [fastify.authenticate] }, async (request, reply) => {
         const res = await fetch(`${contentsServiceUrl}/movies`, {
             method: 'GET',
@@ -272,6 +428,12 @@ function registerMovies(fastify, contentsServiceUrl, queue) {
         const data = await res.json();
         return reply.send(data);
     });
+    /**
+     * @name GET /movies/:id
+     * @function
+     * @memberof module:routes/contents
+     * @summary It retrieves from the microservice a specific movie
+     */
     fastify.get('/movies/:id', { preHandler: [fastify.authenticate] }, async (request, reply) => {
         const id = request.params.id;
         const res = await fetch(`${contentsServiceUrl}/movies/${id}`, {
@@ -280,6 +442,12 @@ function registerMovies(fastify, contentsServiceUrl, queue) {
         const data = await res.json();
         return reply.send(data);
     });
+    /**
+     * @name GET /movies/:id/extended
+     * @function
+     * @memberof module:routes/contents
+     * @summary It retrieves from the microservice a specific movie with extra data.
+     */
     fastify.get('/movies/:id/extended', { preHandler: [fastify.authenticate] }, async (request, reply) => {
         const id = request.params.id;
         const res = await fetch(`${contentsServiceUrl}/movies/${id}/extended`, {
@@ -288,6 +456,12 @@ function registerMovies(fastify, contentsServiceUrl, queue) {
         const data = await res.json();
         return reply.send(data);
     });
+    /**
+     * @name GET /genres/:id/movies
+     * @function
+     * @memberof module:routes/contents
+     * @summary It retrieves from the microservice every movie in a genre
+     */
     fastify.get('/genres/:id/movies', { preHandler: [fastify.authenticate] }, async (request, reply) => {
         const id = request.params.id;
         const res = await fetch(`${contentsServiceUrl}/genres/${id}/movies`, {
@@ -296,6 +470,12 @@ function registerMovies(fastify, contentsServiceUrl, queue) {
         const data = await res.json();
         return reply.send(data);
     });
+    /**
+     * @name GET /actors/:id/movies
+     * @function
+     * @memberof module:routes/contents
+     * @summary It retrieves from the microservice every movie with an actor
+     */
     fastify.get('/actors/:id/movies', { preHandler: [fastify.authenticate] }, async (request, reply) => {
         const id = request.params.id;
         const res = await fetch(`${contentsServiceUrl}/actors/${id}/movies`, {
@@ -304,6 +484,12 @@ function registerMovies(fastify, contentsServiceUrl, queue) {
         const data = await res.json();
         return reply.send(data);
     });
+    /**
+     * @name /directors/:id/movies
+     * @function
+     * @memberof module:routes/contents
+     * @summary It retrieves from the microservice every movie with a director
+     */
     fastify.get('/directors/:id/movies', { preHandler: [fastify.authenticate] }, async (request, reply) => {
         const id = request.params.id;
         const res = await fetch(`${contentsServiceUrl}/directors/${id}/movies`, {
@@ -312,6 +498,12 @@ function registerMovies(fastify, contentsServiceUrl, queue) {
         const data = await res.json();
         return reply.send(data);
     });
+    /**
+     * @name PATCH /movies/:id
+     * @function
+     * @memberof module:routes/contents
+     * @summary It calls the microservice to update a specific movie. It also saves the file and creates a work in a Redis queue so another program transcodes it if the file happened to exist.
+     */
     fastify.patch('/movies/:id', { preHandler: [fastify.authenticate, fastify.requireAdmin] }, async (request, reply) => {
         const id = request.params.id;
         const parts = request.parts();
@@ -373,6 +565,12 @@ function registerMovies(fastify, contentsServiceUrl, queue) {
         const data = await res.json();
         return reply.send(data);
     });
+    /**
+     * @name DELETE /movies/:id
+     * @function
+     * @memberof module:routes/contents
+     * @summary It calls the microservice to delete a specific movie
+     */
     fastify.delete('/movies/:id', { preHandler: [fastify.authenticate, fastify.requireAdmin] }, async (request, reply) => {
         const id = request.params.id;
         const res = await fetch(`${contentsServiceUrl}/movies/${id}`, {
@@ -382,7 +580,18 @@ function registerMovies(fastify, contentsServiceUrl, queue) {
         return reply.send(data);
     });
 }
+/**
+ * It register the specific routes for shows
+ * @param fastify The fastify instance
+ * @param contentsServiceUrl The URL for the contents microservice
+ */
 function registerShows(fastify, contentsServiceUrl) {
+    /**
+     * @name POST /shows
+     * @function
+     * @memberof module:routes/contents
+     * @summary It calls the microservice to create a new show
+     */
     fastify.post('/shows', { preHandler: [fastify.authenticate, fastify.requireAdmin] }, async (request, reply) => {
         const parts = request.parts();
         const metadata = {};
@@ -419,6 +628,12 @@ function registerShows(fastify, contentsServiceUrl) {
         const data = await res.json();
         return reply.send(data);
     });
+    /**
+     * @name GET /shows
+     * @function
+     * @memberof module:routes/contents
+     * @summary It retrieves from the microservice every existing show
+     */
     fastify.get('/shows', { preHandler: [fastify.authenticate] }, async (request, reply) => {
         const res = await fetch(`${contentsServiceUrl}/shows`, {
             method: 'GET',
@@ -426,6 +641,12 @@ function registerShows(fastify, contentsServiceUrl) {
         const data = await res.json();
         return reply.send(data);
     });
+    /**
+     * @name GET /shows/:id
+     * @function
+     * @memberof module:routes/contents
+     * @summary It retrieves from the microservice a specific show
+     */
     fastify.get('/shows/:id', { preHandler: [fastify.authenticate] }, async (request, reply) => {
         const id = request.params.id;
         const res = await fetch(`${contentsServiceUrl}/shows/${id}`, {
@@ -434,6 +655,12 @@ function registerShows(fastify, contentsServiceUrl) {
         const data = await res.json();
         return reply.send(data);
     });
+    /**
+     * @name GET /shows/:id/extended
+     * @function
+     * @memberof module:routes/contents
+     * @summary It retrieves from the microservice a specific show with extra data
+     */
     fastify.get('/shows/:id/extended', { preHandler: [fastify.authenticate] }, async (request, reply) => {
         const id = request.params.id;
         const res = await fetch(`${contentsServiceUrl}/shows/${id}/extended`, {
@@ -442,6 +669,12 @@ function registerShows(fastify, contentsServiceUrl) {
         const data = await res.json();
         return reply.send(data);
     });
+    /**
+     * @name GET /genres/:id/shows
+     * @function
+     * @memberof module:routes/contents
+     * @summary It returns every show in a genre
+     */
     fastify.get('/genres/:id/shows', { preHandler: [fastify.authenticate] }, async (request, reply) => {
         const id = request.params.id;
         const res = await fetch(`${contentsServiceUrl}/genres/${id}/shows`, {
@@ -450,6 +683,12 @@ function registerShows(fastify, contentsServiceUrl) {
         const data = await res.json();
         return reply.send(data);
     });
+    /**
+     * @name GET /actors/:id/shows
+     * @function
+     * @memberof module:routes/contents
+     * @summary It returns every show with an actor
+     */
     fastify.get('/actors/:id/shows', { preHandler: [fastify.authenticate] }, async (request, reply) => {
         const id = request.params.id;
         const res = await fetch(`${contentsServiceUrl}/actors/${id}/shows`, {
@@ -458,6 +697,12 @@ function registerShows(fastify, contentsServiceUrl) {
         const data = await res.json();
         return reply.send(data);
     });
+    /**
+     * @name GET /directors/:id/shows
+     * @function
+     * @memberof module:routes/contents
+     * @summary It returns every show with a director
+     */
     fastify.get('/directors/:id/shows', { preHandler: [fastify.authenticate] }, async (request, reply) => {
         const id = request.params.id;
         const res = await fetch(`${contentsServiceUrl}/directors/${id}/shows`, {
@@ -466,6 +711,12 @@ function registerShows(fastify, contentsServiceUrl) {
         const data = await res.json();
         return reply.send(data);
     });
+    /**
+     * @name PATCH /shows/:id
+     * @function
+     * @memberof module:routes/contents
+     * @summary It calls the microservice to update an existing show
+     */
     fastify.patch('/shows/:id', { preHandler: [fastify.authenticate, fastify.requireAdmin] }, async (request, reply) => {
         const id = request.params.id;
         const parts = request.parts();
@@ -504,6 +755,12 @@ function registerShows(fastify, contentsServiceUrl) {
         const data = await res.json();
         return reply.send(data);
     });
+    /**
+     * @name DELETE /shows/:id
+     * @function
+     * @memberof module:routes/contents
+     * @summary It calls the microservice to delete an existing show
+     */
     fastify.delete('/shows/:id', { preHandler: [fastify.authenticate, fastify.requireAdmin] }, async (request, reply) => {
         const id = request.params.id;
         const res = await fetch(`${contentsServiceUrl}/shows/${id}`, {
@@ -513,7 +770,18 @@ function registerShows(fastify, contentsServiceUrl) {
         return reply.send(data);
     });
 }
+/**
+ * It register the specific routes for episodes
+ * @param fastify The fastify instance
+ * @param contentsServiceUrl The URL for the contents microservice
+ */
 function registerEpisodes(fastify, contentsServiceUrl, queue) {
+    /**
+     * @name POST /episodes
+     * @function
+     * @memberof module:routes/contents
+     * @summary It calls the microservice to create a new episode after saving the file and creating a job in a Redis queue so a different program transcodes it
+     */
     fastify.post('/episodes', { preHandler: [fastify.authenticate, fastify.requireAdmin] }, async (request, reply) => {
         const parts = request.parts();
         const metadata = {};
@@ -562,6 +830,12 @@ function registerEpisodes(fastify, contentsServiceUrl, queue) {
         const data = await res.json();
         return reply.send(data);
     });
+    /**
+     * @name GET /shows/:id/episodes
+     * @function
+     * @memberof module:routes/contents
+     * @summary It retrieves from the microservice every episode in a show
+     */
     fastify.get('/shows/:id/episodes', { preHandler: [fastify.authenticate] }, async (request, reply) => {
         const id = request.params.id;
         const res = await fetch(`${contentsServiceUrl}/shows/${id}/episodes`, {
@@ -570,6 +844,12 @@ function registerEpisodes(fastify, contentsServiceUrl, queue) {
         const data = await res.json();
         return reply.send(data);
     });
+    /**
+     * @name GET /shows/:id/:seasonNum/episodes
+     * @function
+     * @memberof module:routes/contents
+     * @summary It retrieves from the microservice every episode in a show and season
+     */
     fastify.get('/shows/:id/:seasonNum/episodes', { preHandler: [fastify.authenticate] }, async (request, reply) => {
         const id = request.params.id;
         const seasonNum = request.params.seasonNum;
@@ -579,6 +859,12 @@ function registerEpisodes(fastify, contentsServiceUrl, queue) {
         const data = await res.json();
         return reply.send(data);
     });
+    /**
+     * @name GET /episodes/:id
+     * @function
+     * @memberof module:routes/contents
+     * @summary It retrieves from the microservice a specific episode
+     */
     fastify.get('/episodes/:id', { preHandler: [fastify.authenticate] }, async (request, reply) => {
         const id = request.params.id;
         const res = await fetch(`${contentsServiceUrl}/episodes/${id}`, {
@@ -587,6 +873,12 @@ function registerEpisodes(fastify, contentsServiceUrl, queue) {
         const data = await res.json();
         return reply.send(data);
     });
+    /**
+     * @name PATCH /episodes/:id
+     * @function
+     * @memberof module:routes/contents
+     * @summary It calls the microservice to update an existing episode. It also saves the file and creates a job in a Redis queue so a differente program transcodes it if the file happened to exist
+     */
     fastify.patch('/episodes/:id', { preHandler: [fastify.authenticate, fastify.requireAdmin] }, async (request, reply) => {
         const id = request.params.id;
         const parts = request.parts();
@@ -636,6 +928,12 @@ function registerEpisodes(fastify, contentsServiceUrl, queue) {
         const data = await res.json();
         return reply.send(data);
     });
+    /**
+     * @name DELETE /episodes/:id
+     * @function
+     * @memberof module:routes/contents
+     * @summary It calls the microservice to delete an existing episode
+     */
     fastify.delete('/episodes/:id', { preHandler: [fastify.authenticate, fastify.requireAdmin] }, async (request, reply) => {
         const id = request.params.id;
         const res = await fetch(`${contentsServiceUrl}/episodes/${id}`, {
