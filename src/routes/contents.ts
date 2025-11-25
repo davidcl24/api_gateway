@@ -622,7 +622,7 @@ function registerMovies(fastify: FastifyInstance, contentsServiceUrl: string, qu
                 'input_path': filePath,
                 'output_folder': `/uploads/vod/movies/${fileKey}`,
                 'resolutions': [1080, 720, 480],
-                'file_key': fileKey
+                'fileKey': fileKey
             },
             {
                 removeOnComplete: true,
@@ -936,7 +936,7 @@ function registerEpisodes(fastify: FastifyInstance, contentsServiceUrl: string, 
             'input_path': filePath,
             'output_folder': `/uploads/vod/shows/${metadata['show_id']}/${metadata['season_num']}/${fileKey}`,
             'resolutions': [1080, 720, 480],
-            'file_key': fileKey
+            'fileKey': fileKey
         },
         {
             removeOnComplete: true,
@@ -1047,7 +1047,7 @@ function registerEpisodes(fastify: FastifyInstance, contentsServiceUrl: string, 
                 'input_path': filePath,
                 'output_folder': `/uploads/vod/shows/${metadata['show_id']}/${metadata['season_num']}/${fileKey}`,
                 'resolutions': [1080, 720, 480],
-                'file_key': fileKey
+                'fileKey': fileKey
             },
             {
                 removeOnComplete: true,
