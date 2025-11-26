@@ -619,8 +619,8 @@ function registerMovies(fastify: FastifyInstance, contentsServiceUrl: string, qu
             await fs.promises.writeFile(filePath, videoFileBuffer);
 
             await queue.add('ffmpeg-conversion', {
-                'input_path': filePath,
-                'output_folder': `/uploads/vod/movies/${fileKey}`,
+                'inputPath': filePath,
+                'outputFolder': `/uploads/vod/movies/${fileKey}`,
                 'resolutions': [1080, 720, 480],
                 'fileKey': fileKey
             },
@@ -933,8 +933,8 @@ function registerEpisodes(fastify: FastifyInstance, contentsServiceUrl: string, 
         await fs.promises.writeFile(filePath, videoFileBuffer);
 
         await queue.add('ffmpeg-conversion', {
-            'input_path': filePath,
-            'output_folder': `/uploads/vod/shows/${metadata['show_id']}/${metadata['season_num']}/${fileKey}`,
+            'inputPath': filePath,
+            'outputFolder': `/uploads/vod/shows/${metadata['show_id']}/${metadata['season_num']}/${fileKey}`,
             'resolutions': [1080, 720, 480],
             'fileKey': fileKey
         },
@@ -1044,8 +1044,8 @@ function registerEpisodes(fastify: FastifyInstance, contentsServiceUrl: string, 
             await fs.promises.writeFile(filePath, videoFileBuffer);
 
             await queue.add('ffmpeg-conversion', {
-                'input_path': filePath,
-                'output_folder': `/uploads/vod/shows/${metadata['show_id']}/${metadata['season_num']}/${fileKey}`,
+                'inputPath': filePath,
+                'outputFolder': `/uploads/vod/shows/${metadata['show_id']}/${metadata['season_num']}/${fileKey}`,
                 'resolutions': [1080, 720, 480],
                 'fileKey': fileKey
             },
