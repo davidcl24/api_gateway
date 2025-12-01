@@ -11,6 +11,7 @@ import httpProxy from '@fastify/http-proxy';
  */
 export default async function historyProxy(fastify, opts) {
     const historyServiceUrl = process.env.HISTORY_SERVICE_URL || 'http://localhost:7500';
+    const contentsServiceUrl = process.env.CONTENTS_SERVICE_URL || 'http://localhost:8000/api';
     /**
      * @name GET /history/user/personal
      * @function
@@ -24,6 +25,31 @@ export default async function historyProxy(fastify, opts) {
         });
         const data = await res.json();
         return reply.send(data);
+    });
+    fastify.get('/history/user/personal/contents', { preHandler: [fastify.authenticate] }, async (request, reply) => {
+        const sub = request.user.sub;
+        const res = await fetch(`${historyServiceUrl}/api/history/user/${sub}`, {
+            method: 'GET',
+        });
+        const history = await res.json();
+        const movieIds = Array.isArray(history)
+            ? history
+                .filter(element => element.movie_id && element.movie_id !== 0)
+                .map(fav => fav.movie_id)
+            : [];
+        const [movieRes] = await Promise.all([
+            fetch(`${contentsServiceUrl}/movies/batch`, {
+                method: 'POST',
+                headers: {
+                    "Content-Type": 'application/json',
+                },
+                body: JSON.stringify(movieIds),
+            }),
+        ]);
+        const movieData = await movieRes.json();
+        return reply.send({
+            movies: movieData
+        });
     });
     /**
      * @name GET /history/user/personal/movie/:id
