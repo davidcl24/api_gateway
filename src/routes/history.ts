@@ -46,6 +46,11 @@ fastify.get('/history/user/personal/contents', { preHandler: [fastify.authentica
 
         const movieIds = Array.isArray(history)
             ? history
+                .sort((elementA, elementB) => {
+                    const dateA = new Date(elementA.watch_date!).getTime();
+                    const dateB = new Date(elementB.watch_date!).getTime();
+                    return dateA - dateB;
+                })
                 .filter(element => element.movie_id && element.movie_id !== 0)
                 .map(fav => fav.movie_id)
             : [];
