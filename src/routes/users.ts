@@ -190,6 +190,34 @@ export default async function usersProxy(fastify: FastifyInstance, opts: Fastify
         return reply.send(data);
     });
 
+    fastify.post('/login/admin', async(request, reply) => {
+        const res = await fetch(`${usersServiceUrl}/login`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(request.body),
+        });
+
+        const setCookies = res.headers.getSetCookie();
+        if (setCookies) {
+            for (const cookie of setCookies) {
+                reply.header('set-cookie', cookie);
+
+                if (cookie.startsWith("access_token=")) {
+                    const accessToken = cookie.split(";")[0].split("=")[1];
+                    const decoded: any = fastify.jwt.decode(accessToken);
+                    if (decoded && decoded.role! != 'admin') {
+                        return reply.code(403).send({ error: 'Access denied. Admin role required' });
+                    }
+                }
+            }
+        }
+
+        const data = await res.json();
+        return reply.send(data);
+    });
+
     /**
      * @name POST /logout
      * @function
