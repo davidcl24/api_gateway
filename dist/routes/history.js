@@ -53,7 +53,7 @@ export default async function historyProxy(fastify, opts) {
         ]);
         const movieData = await movieRes.json();
         let orderedMovieData = [];
-        if (movieIds) {
+        if (movieData.length > 0) {
             orderedMovieData = [...movieData].sort((a, b) => {
                 const indexA = movieIds.indexOf(a.id);
                 const indexB = movieIds.indexOf(b.id);
