@@ -67,13 +67,16 @@ fastify.get('/history/user/personal/contents', { preHandler: [fastify.authentica
 
         const movieData: any = await movieRes.json();
 
-        const orderedMovieData = [...movieData]
-            .sort((a, b) => {
+        let orderedMovieData = [];
+        if (movieIds) {
+            orderedMovieData = [...movieData].sort((a, b) => {
                 const indexA = movieIds.indexOf(a.id);
                 const indexB = movieIds.indexOf(b.id);
 
                 return indexA - indexB;
             });
+        }
+            
         return reply.send({
             movies: orderedMovieData
         });

@@ -52,12 +52,14 @@ export default async function historyProxy(fastify, opts) {
             }),
         ]);
         const movieData = await movieRes.json();
-        const orderedMovieData = [...movieData]
-            .sort((a, b) => {
-            const indexA = movieIds.indexOf(a.id);
-            const indexB = movieIds.indexOf(b.id);
-            return indexA - indexB;
-        });
+        let orderedMovieData = [];
+        if (movieIds) {
+            orderedMovieData = [...movieData].sort((a, b) => {
+                const indexA = movieIds.indexOf(a.id);
+                const indexB = movieIds.indexOf(b.id);
+                return indexA - indexB;
+            });
+        }
         return reply.send({
             movies: orderedMovieData
         });
